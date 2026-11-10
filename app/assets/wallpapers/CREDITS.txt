@@ -1,0 +1,4 @@
+The landscape and weather illustration images in this folder were generated with AI by the project owner for FreeMyTV LDZ.
+The landscape images are packaged at 1920x1080. All images are bundled in the APK and work offline on both the home
+screen and screensaver. The upstream Free My TV MIT license applies to the code; these visual assets have no separate
+reuse license outside this project.

@@ -1,0 +1,9 @@
+/out/
+/FreeMyTV.apk
+/config.properties
+**/config.properties
+**/tools.local.json
+**/*.keystore
+**/*.jks
+/outputs/
+app/assets/custom/
