@@ -18,10 +18,19 @@ Capturas reais da versão 1.5 em uma TV TCL com Android TV. Use as setas do cont
     <td align="center"><strong>Ajustes · Aparência</strong><br><img src="docs/screenshots/ajustes-aparencia.png" alt="Categoria Aparência do menu de ajustes" width="420"></td>
   </tr>
   <tr>
-    <td align="center"><strong>Ajustes · Clima</strong><br><img src="docs/screenshots/ajustes-clima.png" alt="Categoria Clima do menu de ajustes" width="420"></td>
-    <td align="center"><strong>Ajustes · Sistema</strong><br><img src="docs/screenshots/ajustes-sistema.png" alt="Categoria Sistema do menu de ajustes" width="420"></td>
+    <td align="center"><strong>Escolha do fundo da home</strong><br><img src="docs/screenshots/fundo-tela-inicial.png" alt="Miniaturas disponíveis para o fundo da tela inicial" width="420"></td>
+    <td align="center"><strong>Escolha do fundo do descanso</strong><br><img src="docs/screenshots/fundo-tela-descanso.png" alt="Miniaturas disponíveis para o fundo da tela de descanso" width="420"></td>
   </tr>
 </table>
+
+## Opções de tela de fundo e de descanso
+
+As escolhas do fundo da **Tela inicial** e da **Tela de descanso** são independentes:
+
+- **Tela inicial:** Paisagem do pôr do sol, Montanhas e florestas verdes, Montanhas nevadas, Praia ou Clima e horário.
+- **Tela de descanso:** oferece as mesmas cinco opções, além de **Usar o fundo do Início** e **Alternar paisagens**. A primeira acompanha a escolha da Tela inicial; a segunda alterna entre as quatro paisagens a cada 30 segundos.
+
+Em **Clima e horário**, a ilustração acompanha a condição do tempo e o período do dia. Há imagens próprias para os 15 minutos antes e depois do nascer e do pôr do sol. As paisagens ficam incluídas no APK; a opção de clima precisa dos dados meteorológicos para acompanhar o tempo atual.
 
 ## Baixar
 
