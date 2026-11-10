@@ -1,6 +1,6 @@
 # FreeMyTV LDZ
 
-**Uma versão personalizada e não oficial do Free My TV**, um launcher para Google TV e Android TV. O projeto original de [simbasjungles/free-my-tv](https://github.com/simbasjungles/free-my-tv) foi a inspiração e a base do código. Este projeto é mantido separadamente por Ludez e não é afiliado, patrocinado ou endossado pelos mantenedores do original.
+**Uma versão personalizada e não oficial do Free My TV**, um launcher para Google TV e Android TV. O projeto original de [simbasjungles/free-my-tv](https://github.com/simbasjungles/free-my-tv) foi a inspiração e a base do código. Este projeto é mantido separadamente por LuDeZam e não é afiliado, patrocinado ou endossado pelos mantenedores do original.
 
 > Free My TV é o projeto original de simbasjungles. “FreeMyTV LDZ” identifica esta compilação comunitária personalizada; não reivindicamos a marca ou o logotipo do projeto original.
 
