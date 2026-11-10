@@ -4,6 +4,25 @@
 
 > Free My TV é o projeto original de simbasjungles. “FreeMyTV LDZ” identifica esta compilação comunitária personalizada; não reivindicamos a marca ou o logotipo do projeto original.
 
+## Capturas de tela
+
+Capturas reais da versão 1.5 em uma TV TCL com Android TV. Use as setas do controle para navegar pelas categorias do menu.
+
+<table>
+  <tr>
+    <td align="center"><strong>Tela inicial</strong><br><img src="docs/screenshots/home.png" alt="Home da FreeMyTV LDZ, com previsão do tempo, aplicativos e atalhos" width="420"></td>
+    <td align="center"><strong>Tela de descanso</strong><br><img src="docs/screenshots/tela-descanso.png" alt="Tela de descanso com paisagem, hora, data e clima" width="420"></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Ajustes · Tela inicial</strong><br><img src="docs/screenshots/ajustes-tela-inicial.png" alt="Categoria Tela inicial do menu de ajustes" width="420"></td>
+    <td align="center"><strong>Ajustes · Aparência</strong><br><img src="docs/screenshots/ajustes-aparencia.png" alt="Categoria Aparência do menu de ajustes" width="420"></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Ajustes · Clima</strong><br><img src="docs/screenshots/ajustes-clima.png" alt="Categoria Clima do menu de ajustes" width="420"></td>
+    <td align="center"><strong>Ajustes · Sistema</strong><br><img src="docs/screenshots/ajustes-sistema.png" alt="Categoria Sistema do menu de ajustes" width="420"></td>
+  </tr>
+</table>
+
 ## Baixar
 
 - **FreeMyTV LDZ 1.5:** baixe `FreeMyTV-LDZ-1.5.apk` nos [Releases](https://github.com/ludezam/FreeMyTV-LDZ/releases/latest).
