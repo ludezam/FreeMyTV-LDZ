@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Builds FreeMyTV.apk without Gradle: aapt2 -> javac -> d8 -> zipalign -> apksigner.
+# Builds FreeMyTV-LDZ.apk without Gradle: aapt2 -> javac -> d8 -> zipalign -> apksigner.
 # Needs a JDK (17+) and the Android SDK command-line tools (build-tools 34+, platform android-34). See README.md.
 #   ./build.sh             with config.properties (your city, your TMDB key)
 #   ./build.sh --generic   without it, as the APK on GitHub's releases: no key, and the TV's time zone gives the city
@@ -162,12 +162,12 @@ else "${JAVA_HOME:+$JAVA_HOME/bin/}jar" --update --file out/base.apk -C out clas
 if [ -n "${FREEMYTV_KEYSTORE:-}" ]; then
   [ -n "${FREEMYTV_KEYSTORE_PASS:-}" ] || { echo "FREEMYTV_KEYSTORE_PASS is empty"; exit 1; }
   "$BT/apksigner$BAT" sign --ks "$FREEMYTV_KEYSTORE" --ks-pass env:FREEMYTV_KEYSTORE_PASS --key-pass env:FREEMYTV_KEYSTORE_PASS \
-    --out FreeMyTV.apk out/aligned.apk
+    --out FreeMyTV-LDZ.apk out/aligned.apk
 else
   if [ ! -f freemytv.keystore ]; then
     "$KEYTOOL" -genkeypair -keystore freemytv.keystore -alias freemytv -keyalg RSA -keysize 2048 -validity 20000 \
       -storepass freemytv -keypass freemytv -dname "CN=Free My TV" >/dev/null 2>&1
   fi
-  "$BT/apksigner$BAT" sign --ks freemytv.keystore --ks-pass pass:freemytv --key-pass pass:freemytv --out FreeMyTV.apk out/aligned.apk
+  "$BT/apksigner$BAT" sign --ks freemytv.keystore --ks-pass pass:freemytv --key-pass pass:freemytv --out FreeMyTV-LDZ.apk out/aligned.apk
 fi
-echo "Built FreeMyTV.apk ($(du -h FreeMyTV.apk | cut -f1)). Install: adb install -r FreeMyTV.apk"
+echo "Built FreeMyTV-LDZ.apk ($(du -h FreeMyTV-LDZ.apk | cut -f1)). Install: adb install -r FreeMyTV-LDZ.apk"
