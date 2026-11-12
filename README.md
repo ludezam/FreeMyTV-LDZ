@@ -34,7 +34,7 @@ Em **Clima e horário**, a ilustração acompanha a condição do tempo e o per�
 
 ## Baixar
 
-- **FreeMyTV LDZ 1.5:** baixe `FreeMyTV-LDZ-1.5.apk` nos [Releases](https://github.com/ludezam/FreeMyTV-LDZ/releases/latest).
+- **FreeMyTV LDZ 1.5.3:** baixe `FreeMyTV.apk` nos [Releases](https://github.com/ludezam/FreeMyTV-LDZ/releases/latest).
 - **Pacote com os três apps:** baixe `LDZ-TV-Apps.zip` nos Releases. Ele contém FreeMyTV LDZ, Tempo LDZ e Quadro LDZ como APKs independentes.
 - Tempo LDZ: [projeto e código](https://github.com/ludezam/tempoLDZ).
 - Quadro LDZ: [projeto, instruções e releases](https://github.com/ludezam/Quadro-LDZ).
@@ -43,6 +43,9 @@ O pacote não combina os aplicativos em um só: instale somente os APKs que quis
 
 ## O que muda nesta versão
 
+- O menu **Atualizações** consulta as releases do FreeMyTV LDZ. Instale manualmente a versão 1.5.3 uma vez; versões posteriores poderão ser encontradas pelo próprio menu.
+- A instalação de cada atualização continua dependendo da confirmação do Android.
+- Em Aparência, o fundo inicial pode ser alternado entre desfocado e nítido.
 - Menu de configurações reorganizado nas categorias **Tela inicial**, **Aparência**, **Clima** e **Sistema**.
 - Relógio fixo no topo da tela inicial.
 - Remoção das opções Destaques, Widget tocando agora e Minhas fotos.
@@ -56,12 +59,12 @@ O APK é destinado a TVs Android/Google TV. Com depuração ADB ativada e a TV e
 
 ```powershell
 adb connect IP_DA_TV:5555
-adb install -r FreeMyTV-LDZ-1.5.apk
+adb install -r FreeMyTV.apk
 ```
 
 Na primeira instalação, selecione FreeMyTV LDZ no menu de apps e escolha **Free My TV** em **Tela inicial**. Se o Android perguntar, permita a depuração USB.
 
-As versões LDZ são assinadas com uma chave privada de distribuição que não está neste repositório. APKs assinados por outra chave não atualizam esta instalação diretamente. O menu **Atualizações** consulta as releases oficiais de Free My TV, não as releases LDZ; atualizações LDZ são baixadas manualmente nesta página.
+As versões LDZ são assinadas com uma chave privada de distribuição que não está neste repositório. Todas as futuras versões devem usar a mesma chave para que o Android aceite a atualização. Nunca envie o arquivo `.keystore` ou a chave privada ao GitHub.
 
 ## Compilar o código
 
@@ -71,7 +74,7 @@ O build Android usa JDK 17, Android SDK com `platforms;android-34` e `build-tool
 ./build.sh --generic --custom
 ```
 
-O comando cria um APK genérico personalizado em `FreeMyTV.apk`. Uma compilação local usa uma chave própria; ela não substitui o APK publicado a menos que seja assinada com a mesma chave privada. **Nunca envie arquivos `.keystore` ou chaves privadas ao GitHub.**
+O comando cria um APK genérico personalizado em `FreeMyTV.apk`. Para publicar uma atualização pelo menu, anexe-o à release com esse nome exato e assine-o com a chave privada de distribuição LDZ. **Nunca envie arquivos `.keystore` ou chaves privadas ao GitHub.**
 
 ## Créditos e licenças
 

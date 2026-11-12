@@ -23,7 +23,7 @@ final class Wallpapers {
     static Backdrop sunset(Context context) {
         try (InputStream in = context.getAssets().open("wallpapers/sunset.jpg")) {
             Bitmap bitmap = BitmapFactory.decodeStream(in);
-            if (bitmap != null) return Backdrop.make(bitmap, true, true);
+            if (bitmap != null) return Backdrop.make(bitmap, true, true, Prefs.wallpaperBlurred());
         } catch (Exception e) {
             AppLog.w("Sunset wallpaper: " + e.getMessage());
         }
@@ -34,7 +34,7 @@ final class Wallpapers {
     static Backdrop landscape(Context context, String mode) {
         Bitmap bitmap = bundledImage(context, mode);
         if (bitmap == null) return sunset(context);
-        return Backdrop.make(bitmap, true, true);
+        return Backdrop.make(bitmap, true, true, Prefs.wallpaperBlurred());
     }
 
     private static final long SUN_WINDOW_MS = 15 * 60_000L;
@@ -70,7 +70,7 @@ final class Wallpapers {
     /** Weather photo; dawn and dusk take precedence during their 30-minute windows. */
     static Backdrop weather(Context context, int code, boolean day, long now, long sunrise, long sunset) {
         Bitmap image = weatherImage(context, code, day, now, sunrise, sunset);
-        return Backdrop.make(image != null ? image : scene(code, day), true, true);
+        return Backdrop.make(image != null ? image : scene(code, day), true, true, Prefs.wallpaperBlurred());
     }
 
     private static Bitmap weatherImage(Context context, int code, boolean day, long now, long sunrise, long sunset) {

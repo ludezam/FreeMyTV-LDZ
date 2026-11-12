@@ -79,6 +79,11 @@ final class Backdrop {
      * right, so it still reads as your photo. The glass and the drawer stay as they are.
      */
     static Backdrop make(Bitmap src, boolean forLight, boolean own) {
+        return make(src, forLight, own, true);
+    }
+
+    /** `blurred` selects the low-resolution frosted home photo or a full-screen sharp photo. */
+    static Backdrop make(Bitmap src, boolean forLight, boolean own, boolean blurred) {
         // Cropped to 16:9 at the source's resolution first, then filtered down (no step over 2×).
         Bitmap crop = center(src, (float) W / H);
         if (crop != src) src.recycle();
@@ -100,12 +105,14 @@ final class Backdrop {
             int[] night = darken(frost.clone(), 0.76f);
             int[] nightGlass = darken(glass, 0.56f);
             if (own) {
-                int[] sharp = reduce(out, GW, GH, 1, 1);
-                int[] lightBg = Config.CUSTOM_SKIN ? ramp(sharp.clone(), 0.34f, 0.08f, false)
-                        : ramp(sharp.clone(), 0.82f, 0.45f, true);
-                int[] nightBg = ramp(sharp, 0.76f, 0.5f, false);
+                int bw = blurred ? GW : W, bh = blurred ? GH : H;
+                int[] sharp = blurred ? reduce(out, bw, bh, 1, 1) : new int[bw * bh];
+                if (!blurred) out.getPixels(sharp, 0, bw, 0, 0, bw, bh);
+                int[] lightBg = Config.CUSTOM_SKIN ? ramp(sharp.clone(), bw, bh, 0.34f, 0.08f, false)
+                        : ramp(sharp.clone(), bw, bh, 0.82f, 0.45f, true);
+                int[] nightBg = ramp(sharp, bw, bh, 0.76f, 0.5f, false);
                 out.recycle();
-                return new Backdrop(null, frost, null, wide, light, lightGlass, night, nightGlass, lightBg, nightBg, GW, GH);
+                return new Backdrop(null, frost, null, wide, light, lightGlass, night, nightGlass, lightBg, nightBg, bw, bh);
             }
             out.recycle();
             return new Backdrop(null, frost, null, wide, light, lightGlass, night, nightGlass);
@@ -220,13 +227,17 @@ final class Backdrop {
 
     /** Whitens (or darkens) by `left` up to 45% of the width, easing to `right` by 70% (a GW × GH image). */
     private static int[] ramp(int[] px, float left, float right, boolean light) {
-        int[] col = new int[GH];
-        for (int x = 0; x < GW; x++) {
-            float t = Math.max(0, Math.min(1, (x / (float) GW - 0.45f) / 0.25f));
+        return ramp(px, GW, GH, left, right, light);
+    }
+
+    private static int[] ramp(int[] px, int w, int h, float left, float right, boolean light) {
+        int[] col = new int[h];
+        for (int x = 0; x < w; x++) {
+            float t = Math.max(0, Math.min(1, (x / (float) w - 0.45f) / 0.25f));
             float a = left + (right - left) * t * t * (3 - 2 * t);
-            for (int y = 0; y < GH; y++) col[y] = px[y * GW + x];
+            for (int y = 0; y < h; y++) col[y] = px[y * w + x];
             if (light) whiten(col, a); else darken(col, a);
-            for (int y = 0; y < GH; y++) px[y * GW + x] = col[y];
+            for (int y = 0; y < h; y++) px[y * w + x] = col[y];
         }
         return px;
     }

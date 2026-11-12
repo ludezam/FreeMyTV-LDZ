@@ -3364,7 +3364,8 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         boolean day = data.weather.isDay;
         long now = System.currentTimeMillis(), sunrise = data.weather.sunrise, sunset = data.weather.sunset;
         String slot = weather ? Wallpapers.solarSlot(now, sunrise, sunset) : "";
-        String key = weather ? "weather:" + code + ":" + day + ":" + slot : mode;
+        String key = (weather ? "weather:" + code + ":" + day + ":" + slot : mode)
+                + (Prefs.wallpaperBlurred() ? ":blur" : ":sharp");
         if (key.equals(customWallpaperKey)) return customWallpaper;
         if (!key.equals(customWallpaperRequested)) {
             customWallpaperRequested = key;

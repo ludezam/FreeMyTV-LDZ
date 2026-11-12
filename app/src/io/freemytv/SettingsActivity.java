@@ -630,7 +630,7 @@ public class SettingsActivity extends Activity {
             Symbols.draw(getContext(), c, "sparkles", cx, 445 * k, 34 * k, 0xEBFFFFFF);
             c.drawText("FreeMyTV LDZ", cx, 520 * k, title);
             c.drawText(Ui.tr("Settings"), cx, 574 * k, subtitle);
-            c.drawText("1.5 · TCL Android TV", cx, 640 * k, version);
+            c.drawText("1.5.3 · TCL Android TV", cx, 640 * k, version);
 
             if (screen == MAIN) drawMain(c, seconds); else if (screen == MAIN_INFO) drawMainInfo(c); else if (screen == HOME_CHOICE) drawChoice(c); else if (screen == PICKER) drawPicker(c); else if (screen == SHELF_EDIT) drawShelfEditor(c);
             else if (screen == THUMB_PICKER) drawThumbnailPicker(c);
@@ -1104,9 +1104,10 @@ public class SettingsActivity extends Activity {
 
         private static final String[] UNITS = {"auto", "C", "F"}, THEMES = {"auto", "light", "dark"};
         /** The custom wallpaper selector is inserted after Theme only in the personalized build. */
-        private static final int CUSTOM_ROW_SHIFT = Config.CUSTOM_SKIN ? 2 : 0;
+        private static final int CUSTOM_ROW_SHIFT = Config.CUSTOM_SKIN ? 3 : 0;
         private static final int WALLPAPER_ROW = Config.CUSTOM_SKIN ? 3 : -1;
-        private static final int SAVER_BACKGROUND_ROW = Config.CUSTOM_SKIN ? 4 : -1;
+        private static final int WALLPAPER_BLUR_ROW = Config.CUSTOM_SKIN ? 4 : -1;
+        private static final int SAVER_BACKGROUND_ROW = Config.CUSTOM_SKIN ? 5 : -1;
         /** Home Settings: language, temperature, theme, optional wallpaper, photos, widgets and updates. */
         private static final int PHOTOS_ROW = 3 + CUSTOM_ROW_SHIFT, SOUNDS_ROW = 4 + CUSTOM_ROW_SHIFT,
                 TOP_ROW = 5 + CUSTOM_ROW_SHIFT, PICKS_ROW = 6 + CUSTOM_ROW_SHIFT, WATCH_ROW = 7 + CUSTOM_ROW_SHIFT,
@@ -1119,6 +1120,7 @@ public class SettingsActivity extends Activity {
             l.add(Ui.tr("Temperature"));
             l.add(Ui.tr("Theme"));
             if (Config.CUSTOM_SKIN) l.add(Ui.tr("Background mode"));
+            if (Config.CUSTOM_SKIN) l.add(Ui.tr("Home background clarity"));
             if (Config.CUSTOM_SKIN) l.add(Ui.tr("Screensaver background"));
             l.add(Ui.tr("My Photos"));
             l.add(Ui.tr("Navigation sounds"));
@@ -1187,7 +1189,7 @@ public class SettingsActivity extends Activity {
 
         private int settingCategoryForRow(int row) {
             if (row >= actionHomeRow() && row <= actionRemoteRow() || row == SOUNDS_ROW) return 0;
-            if (row <= 2 || Config.CUSTOM_SKIN && (row == WALLPAPER_ROW || row == SAVER_BACKGROUND_ROW)) return 1;
+            if (row <= 2 || Config.CUSTOM_SKIN && (row == WALLPAPER_ROW || row == WALLPAPER_BLUR_ROW || row == SAVER_BACKGROUND_ROW)) return 1;
             if (row == WEATHER_ROW || row == CITY_ROW || row == FORECAST_ROW || row == PLAYING_ROW) return 2;
             return 3;
         }
@@ -1212,7 +1214,7 @@ public class SettingsActivity extends Activity {
                         for (int row : order) if (row >= 0 && row < menuSettingLabels().length && settingRowVisible(row)) grouped.add(row);
                     } else if (group == 1) {
                         grouped.clear();
-                        int[] order = {WALLPAPER_ROW, SAVER_BACKGROUND_ROW, 0, 1, 2};
+                        int[] order = {WALLPAPER_ROW, WALLPAPER_BLUR_ROW, SAVER_BACKGROUND_ROW, 0, 1, 2};
                         for (int row : order) if (row >= 0 && row < settingLabels().length && settingRowVisible(row)) grouped.add(row);
                     }
                     int[] indexed = new int[grouped.size()];
@@ -1288,6 +1290,7 @@ public class SettingsActivity extends Activity {
                 v[WALLPAPER_ROW] = Ui.tr("forest".equals(mode) ? "Green forest mountains"
                         : "snow".equals(mode) ? "Snowy mountains" : "beach".equals(mode) ? "Beach"
                         : "weather".equals(mode) ? "Weather and time" : "Sunset landscape");
+                v[WALLPAPER_BLUR_ROW] = Ui.tr(Prefs.wallpaperBlurred() ? "Blurred" : "Sharp");
                 String saver = Prefs.saverBackground();
                 v[SAVER_BACKGROUND_ROW] = Ui.tr("rotate".equals(saver) ? "Rotate landscapes"
                         : "photos".equals(saver) ? "Photos and recommendations"
@@ -1577,6 +1580,12 @@ public class SettingsActivity extends Activity {
             if (screen == THUMB_PICKER) { moveThumbnail(dir); return; }
             if (screen == HOME_SETTINGS && Config.CUSTOM_SKIN && (row == WALLPAPER_ROW || row == SAVER_BACKGROUND_ROW)) {
                 openThumbnailPicker(row == SAVER_BACKGROUND_ROW);
+                return;
+            }
+            if (screen == HOME_SETTINGS && Config.CUSTOM_SKIN && row == WALLPAPER_BLUR_ROW) {
+                Prefs.setWallpaperBlurred(!Prefs.wallpaperBlurred());
+                invalidate();
+                spoken.focusMoved();
                 return;
             }
             switch (row) {

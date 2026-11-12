@@ -266,6 +266,10 @@ final class Prefs {
                 || "weather".equals(mode) ? mode : "sunset");
     }
 
+    /** The home wallpaper defaults to the original softly blurred treatment. */
+    static boolean wallpaperBlurred() { return sp().getBoolean("wallpaperBlurred", true); }
+    static void setWallpaperBlurred(boolean blurred) { put("wallpaperBlurred", blurred); }
+
     /** Screen saver content: the current home background, local landscape rotation, or the old photos option as home background. */
     static String saverBackground() {
         String v = sp().getString("saverBackground", "selected");

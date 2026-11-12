@@ -33,8 +33,8 @@ import java.security.MessageDigest;
 /**
  * Updates from GitHub's releases (Android only). Once a week, and from Home Settings > Updates, the latest release is
  * looked up; a newer one's FreeMyTV.apk is downloaded and checked (GitHub's size and SHA-256, a newer version, the
- * project's key), then handed on OK to Android's installer, which asks before installing. Only the APK from the
- * releases (--generic, the project's key) takes them: a build made on a computer has its own key and config, so it's
+ * LDZ distribution key), then handed on OK to Android's installer, which asks before installing. Only the APK from the
+ * LDZ releases (--generic, the distribution key) takes them: a build made on a computer has its own key and config, so it's
  * only told that a new version is out, and only when asked (nothing in the background could come of it).
  *
  * Checks and installs run in the main process (ModeJob, HomeReceiver), one at a time under this class's lock, and only
@@ -43,11 +43,11 @@ import java.security.MessageDigest;
 final class Updates {
     private Updates() {}
 
-    private static final String LATEST = "https://api.github.com/repos/simbasjungles/free-my-tv/releases/latest";
+    private static final String LATEST = "https://api.github.com/repos/ludezam/FreeMyTV-LDZ/releases/latest";
     // The only place the APK may come from: this repository's releases (github.com redirects to its download host).
-    private static final String RELEASES = "https://github.com/simbasjungles/free-my-tv/releases/download/";
-    // The release key's certificate, as `apksigner verify --print-certs` shows it: only APKs signed with it come in.
-    private static final String RELEASE_CERT = "b85d4ff69cb42bfb1837ee0279506363954470b16402a4165f2f095886d19204";
+    private static final String RELEASES = "https://github.com/ludezam/FreeMyTV-LDZ/releases/download/";
+    // The LDZ distribution certificate: `apksigner verify --print-certs` SHA-256.
+    private static final String RELEASE_CERT = "36a1f3a1af9cb3716ea08f87711a24937a345d95a219a856879175a4fa994a74";
     private static final String ASSET = "FreeMyTV.apk";
     private static final long MAX_SIZE = 30L << 20;   // the APK is about 1.5 MB
     private static final long WEEK = 7 * 24 * 3600_000L;
@@ -61,9 +61,9 @@ final class Updates {
     // Why it failed ("error"): no network, or anything else (the log has the details).
     private static final String OFFLINE = "offline", OTHER = "other";
 
-    private static Boolean releaseKey;   // this app is signed with the release key (read once per process)
+    private static Boolean releaseKey;   // this app is signed with the LDZ distribution key (read once per process)
 
-    /** The APK from the releases: built with --generic and signed with the project's key, so it can take the next. */
+    /** The APK from the LDZ releases: built with --generic and signed with the LDZ distribution key. */
     static boolean takesReleases(Context c) {
         if (!Config.GENERIC) return false;
         if (releaseKey == null) {
