@@ -73,6 +73,11 @@ final class Prefs {
 
     static void init(Context c) {
         app = c.getApplicationContext();
+        // TMDB-powered picks were removed from this build; discard any key saved by an older version.
+        if (sp().contains("tmdbKey")) sp().edit().remove("tmdbKey").apply();
+        SharedPreferences oldPicks = app.getSharedPreferences("recs", Context.MODE_PRIVATE);
+        if (!oldPicks.getAll().isEmpty()) oldPicks.edit().clear().apply();
+        new File(app.getFilesDir(), "recs-status.json").delete();
         migrateKeys();   // before anything reads the button choices
         Ui.applyLanguage();   // the language picked on the TV, now that it can be read
     }

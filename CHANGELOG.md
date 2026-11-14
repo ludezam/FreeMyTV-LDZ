@@ -1,5 +1,11 @@
 # Histórico de versões
 
+## 1.5.4
+- Remove do menu as opções e informações sobre TMDB e limpa qualquer chave TMDB salva por versões anteriores.
+- Limpa também o cache local das recomendações antigas.
+- Ajusta o ícone de Wi-Fi da tela inicial para mostrar conexão em branco e desconexão em cinza, com ondas mais nítidas e contorno de contraste.
+- Os novos prints do README serão adicionados após a atualização da TV.
+
 ## 1.5.3
 - Direciona o menu Atualizações para as releases do FreeMyTV LDZ.
 - Valida os APKs com a chave de distribuição LDZ e prepara a instalação de atualizações futuras pelo menu.

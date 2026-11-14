@@ -201,8 +201,7 @@ public class SettingsActivity extends Activity {
         private int watchScan, watchHiddenCount;
         private final RectF tmp = new RectF(), rowRect = new RectF(), focusBox = new RectF();
         private Paint mainCardLabel, mainCardValue;
-        private JSONObject state = new JSONObject(), recs = new JSONObject();
-        private boolean hasKey;
+        private JSONObject state = new JSONObject();
         private int screen = HOME_SETTINGS, focus;
         private int settingsCategory;
         private boolean settingsCategoriesFocused = true;
@@ -240,8 +239,6 @@ public class SettingsActivity extends Activity {
                 }
                 state = HomeMode.state(getContext());
                 sleepLeft = SleepTimer.minutesLeft(getContext());
-                hasKey = Recs.hasKey(getContext());
-                recs = Recs.status(getContext());
                 String updatesWas = updatesValue();
                 updates = Updates.state(getContext());
                 if (screen == HOME_SETTINGS && homeSettingRow() == updatesRow() && !updatesWas.equals(updatesValue())) {
@@ -691,8 +688,7 @@ public class SettingsActivity extends Activity {
             Paint heading = Ui.text(Ui.displaySemibold, 34 * k, 0xFFFFFFFF);
             c.drawText(Ui.tr("More information"), x, (LIST_TOP - 24) * k, heading);
             float y = drawComparison(c, 196 * k);
-            y = drawRecs(c, y + 26 * k);
-            drawNotices(c, y + 30 * k);
+            drawNotices(c, y + 26 * k);
             String error = state.optString("error");
             String busy = busyText();
             if (busy.equals(Ui.tr("Accept “Allow USB debugging?” on the TV (tick “Always allow”)."))) {
@@ -832,29 +828,6 @@ public class SettingsActivity extends Activity {
             }
                     c.drawText("↑ ↓ " + Ui.tr("Categories") + "     OK " + Ui.tr("Open") + "     ← " + Ui.tr("Back"),
                     1824 * k, h - 25 * k, settingsFooter);
-        }
-
-        /** Home screen picks: status, and the credit TMDB asks for. */
-        private float drawRecs(Canvas c, float y) {
-            float x = LIST_X * k + 30 * k;
-            c.drawText(Ui.tr("RECOMMENDATIONS"), x, y, header);
-            String line;
-            String error = recs.optString("error");
-            int count = recs.optInt("count");
-            if (!hasKey) line = Ui.tr("No TMDB key: add yours in Home Settings > TMDB key.");
-            else if (error.equals(Recs.NO_KNOWN_APPS)) line = Ui.tr("None of the TV's streaming apps can give picks.");
-            else if (error.equals(Recs.NO_APPS)) line = Ui.trf("TMDB has none of the TV's apps for tmdb_region={region}.", "region", Recs.REGION);
-            else if (!error.isEmpty()) line = Ui.trf("Error: {error}.", "error", error);
-            else if (count > 0) line = Ui.trf("On · {n} titles from the TV's apps, new ones every hour.", "n", count);
-            else line = Ui.tr("Fetching titles…");
-            c.drawText(TextUtils.ellipsize(line, notice, 790 * k, TextUtils.TruncateAt.END).toString(), x, y + 42 * k, notice);
-            version.setTextAlign(Paint.Align.LEFT);
-            c.drawText(Ui.tr("This product uses the TMDB API but is not endorsed or certified by TMDB."), x, y + 78 * k, version);
-            if (!Config.WATCHMODE_KEY.trim().isEmpty()) {
-                c.drawText(Ui.tr("Links to the titles by Watchmode."), x, y + 108 * k, version);
-            }
-            version.setTextAlign(Paint.Align.CENTER);
-            return y + (Config.WATCHMODE_KEY.trim().isEmpty() ? 78 : 108) * k;
         }
 
         /** List row: no background; focused, white with a shadow (the Apple TV focus). Returns how focused it is. */
@@ -1196,7 +1169,7 @@ public class SettingsActivity extends Activity {
 
         /** Rows removed from this personalized menu; their old preferences remain stored but are inactive. */
         private boolean settingRowVisible(int row) {
-            return row != PHOTOS_ROW && row != TOP_ROW && row != PICKS_ROW && row != WATCH_ROW
+            return row != PHOTOS_ROW && row != TOP_ROW && row != PICKS_ROW && row != WATCH_ROW && row != keyRow()
                     && row != SAVER_ROW && row != PLAYING_ROW;
         }
 
@@ -1315,7 +1288,6 @@ public class SettingsActivity extends Activity {
             v[CITY_ROW] = !cityStatus.isEmpty() ? cityStatus : Prefs.city().isEmpty() ? "—" : Prefs.city();
             v[FORECAST_ROW] = Prefs.forecast().equals("days") ? Ui.tr("Next days") : Ui.tr("Next hours");
             v[PLAYING_ROW] = onOff(Prefs.nowPlaying());
-            v[v.length - 2] = keyValue();
             v[v.length - 1] = updatesValue();
             return v;
         }
