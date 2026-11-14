@@ -6,7 +6,7 @@
 
 ## Capturas de tela
 
-Capturas reais da versão 1.5 em uma TV TCL com Android TV. Use as setas do controle para navegar pelas categorias do menu.
+Capturas reais da versão 1.5.5 em uma TV TCL com Android TV. Use as setas do controle para navegar pelas categorias do menu.
 
 <table>
   <tr>
@@ -14,8 +14,8 @@ Capturas reais da versão 1.5 em uma TV TCL com Android TV. Use as setas do cont
     <td align="center"><strong>Tela de descanso</strong><br><img src="docs/screenshots/tela-descanso.png" alt="Tela de descanso com paisagem, hora, data e clima" width="420"></td>
   </tr>
   <tr>
-    <td align="center"><strong>Ajustes · Tela inicial</strong><br><img src="docs/screenshots/ajustes-tela-inicial.png" alt="Categoria Tela inicial do menu de ajustes" width="420"></td>
-    <td align="center"><strong>Ajustes · Aparência</strong><br><img src="docs/screenshots/ajustes-aparencia.png" alt="Categoria Aparência do menu de ajustes" width="420"></td>
+    <td align="center"><strong>Ajustes · Aparência</strong><br><img src="docs/screenshots/ajustes-aparencia.png" alt="Ajustes de modo e nitidez do fundo, descanso, idioma, temperatura e tema" width="420"></td>
+    <td align="center"><strong>Ajustes · Sistema</strong><br><img src="docs/screenshots/sistema.png" alt="Tela de atualizações e opções de sistema, exibindo FreeMyTV LDZ 1.5.5" width="420"></td>
   </tr>
   <tr>
     <td align="center"><strong>Escolha do fundo da home</strong><br><img src="docs/screenshots/fundo-tela-inicial.png" alt="Miniaturas disponíveis para o fundo da tela inicial" width="420"></td>
