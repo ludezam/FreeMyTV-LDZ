@@ -224,6 +224,7 @@ public class SettingsActivity extends Activity {
         private Paint shellPaint, dividerPaint, wifiPaint, settingsHint, settingsFooter;
         private TextPaint notice, rowValueFit, settingLabelFit;
         private String clockText = "";
+        private String versionLine = "";
         private long clockMinute = -1;
         private String[] settingLabelCache, menuSettingLabelCache, categoryLabelCache;
         private String[] sidebarHintCache;
@@ -276,6 +277,7 @@ public class SettingsActivity extends Activity {
             setFocusable(true);
             setContentDescription("Free My TV");
             installed = Updates.installedVersion(a);
+            versionLine = (installed.isEmpty() ? "" : installed + " · ") + "TCL Android TV";
             scanWatchApps();
             // TalkBack: one item per row, id = row + 1.
             spoken = new Spoken(this, new Spoken.Source() {
@@ -627,7 +629,7 @@ public class SettingsActivity extends Activity {
             Symbols.draw(getContext(), c, "sparkles", cx, 445 * k, 34 * k, 0xEBFFFFFF);
             c.drawText("FreeMyTV LDZ", cx, 520 * k, title);
             c.drawText(Ui.tr("Settings"), cx, 574 * k, subtitle);
-            c.drawText("1.5.3 · TCL Android TV", cx, 640 * k, version);
+            c.drawText(versionLine, cx, 640 * k, version);
 
             if (screen == MAIN) drawMain(c, seconds); else if (screen == MAIN_INFO) drawMainInfo(c); else if (screen == HOME_CHOICE) drawChoice(c); else if (screen == PICKER) drawPicker(c); else if (screen == SHELF_EDIT) drawShelfEditor(c);
             else if (screen == THUMB_PICKER) drawThumbnailPicker(c);
@@ -1627,8 +1629,9 @@ public class SettingsActivity extends Activity {
         // MARK: - Updates (GitHub's releases)
 
         /**
-         * OK on Updates: installs one that's ready, else checks now. Both run as jobs in the main process, as the week's
-         * check does, so one process writes the state; this screen reads it in poll.
+         * OK on Updates: check or install while this TV settings activity is in the foreground. Some TV vendors (TCL
+         * included) block JobService starts unless a separate vendor auto-start permission is enabled. Running this
+         * user-requested work here avoids that vendor restriction; the periodic background check remains a job.
          */
         private void updateNow() {
             Context c = getContext();
@@ -1637,11 +1640,13 @@ public class SettingsActivity extends Activity {
             if (Updates.ready(updates, installed)) {
                 if (now - installAskedAt < 5000) return;   // Android's installer is on its way
                 installAskedAt = now;
-                ModeJob.schedule(c, ModeJob.INSTALL, "", 0);
+                ModeJob.cancel(c, ModeJob.INSTALL);
+                new Thread(() -> Updates.install(c), "free-my-tv-update-install").start();
             } else {
                 if (Updates.busy(updates) || checkAsked()) return;
                 checkAskedAt = now;
-                ModeJob.schedule(c, ModeJob.UPDATE, "", 0);
+                ModeJob.cancel(c, ModeJob.UPDATE);
+                new Thread(() -> Updates.check(c), "free-my-tv-update-check").start();
             }
             handler.removeCallbacks(poll);
             handler.postDelayed(poll, 500);

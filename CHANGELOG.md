@@ -1,5 +1,10 @@
 # Histórico de versões
 
+## 1.5.5
+- Corrige a atualização manual em TVs TCL: a checagem e o início da instalação agora rodam enquanto a tela de ajustes está aberta, sem depender da permissão proprietária de início automático.
+- O ícone de Wi-Fi passa a observar redes Wi-Fi diretamente, mesmo quando Ethernet ou VPN é a rota principal, e redesenha as três ondas como arcos distintos.
+- A versão mostrada sob “FreeMyTV LDZ” agora vem do pacote realmente instalado.
+
 ## 1.5.4
 - Remove do menu as opções e informações sobre TMDB e limpa qualquer chave TMDB salva por versões anteriores.
 - Limpa também o cache local das recomendações antigas.

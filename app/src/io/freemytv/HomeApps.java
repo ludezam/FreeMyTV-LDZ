@@ -286,9 +286,14 @@ final class HomeApps {
     private static boolean wifiConnected(Context context) {
         try {
             android.net.ConnectivityManager cm = context.getSystemService(android.net.ConnectivityManager.class);
-            android.net.Network active = cm == null ? null : cm.getActiveNetwork();
-            android.net.NetworkCapabilities caps = active == null ? null : cm.getNetworkCapabilities(active);
-            return caps != null && caps.hasTransport(android.net.NetworkCapabilities.TRANSPORT_WIFI);
+            if (cm == null) return false;
+            // The default route can be Ethernet or a VPN even while Wi-Fi is connected. Inspect Wi-Fi networks
+            // directly so the button reports the radio's actual connection, not whichever route Android prefers.
+            for (android.net.Network network : cm.getAllNetworks()) {
+                android.net.NetworkCapabilities caps = cm.getNetworkCapabilities(network);
+                if (caps != null && caps.hasTransport(android.net.NetworkCapabilities.TRANSPORT_WIFI)) return true;
+            }
+            return false;
         } catch (RuntimeException ignored) { return false; }
     }
 

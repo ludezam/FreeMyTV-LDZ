@@ -34,7 +34,7 @@ Em **Clima e horário**, a ilustração acompanha a condição do tempo e o per�
 
 ## Baixar
 
-- **FreeMyTV LDZ 1.5.4:** baixe `FreeMyTV-LDZ.apk` nos [Releases](https://github.com/ludezam/FreeMyTV-LDZ/releases/latest).
+- **FreeMyTV LDZ 1.5.5:** baixe `FreeMyTV-LDZ.apk` nos [Releases](https://github.com/ludezam/FreeMyTV-LDZ/releases/latest).
 - **Pacote com os três apps:** baixe `LDZ-TV-Apps.zip` nos Releases. Ele contém FreeMyTV LDZ, Tempo LDZ e Quadro LDZ como APKs independentes.
 - Tempo LDZ: [projeto e código](https://github.com/ludezam/tempoLDZ).
 - Quadro LDZ: [projeto, instruções e releases](https://github.com/ludezam/Quadro-LDZ).
@@ -43,7 +43,7 @@ O pacote não combina os aplicativos em um só: instale somente os APKs que quis
 
 ## O que muda nesta versão
 
-- O menu **Atualizações** consulta as releases do FreeMyTV LDZ. Instale manualmente a versão 1.5.3 uma vez; versões posteriores poderão ser encontradas pelo próprio menu.
+- O menu **Atualizações** consulta as releases do FreeMyTV LDZ. Em TVs TCL, a checagem manual funciona com a tela de ajustes aberta, mesmo quando o sistema bloqueia tarefas em segundo plano.
 - A instalação de cada atualização continua dependendo da confirmação do Android.
 - Em Aparência, o fundo inicial pode ser alternado entre desfocado e nítido.
 - Menu de configurações reorganizado nas categorias **Tela inicial**, **Aparência**, **Clima** e **Sistema**.
@@ -51,7 +51,8 @@ O pacote não combina os aplicativos em um só: instale somente os APKs que quis
 - Remoção das opções Destaques, Widget tocando agora e Minhas fotos.
 - Remoção do ícone decorativo de Wi‑Fi na tela de ajustes.
 - Remoção das configurações, avisos e dados guardados do TMDB; as recomendações do TMDB deixam de ser exibidas.
-- O ícone de Wi‑Fi da tela inicial acompanha a conexão real: branco quando conectado e cinza quando desconectado, com ondas redesenhadas e contorno para manter o contraste sobre as imagens.
+- O ícone de Wi‑Fi da tela inicial acompanha redes Wi‑Fi conectadas mesmo quando Ethernet ou VPN é a rota principal: branco quando conectado e cinza quando desconectado, com três ondas em arco e contorno para manter o contraste.
+- A versão mostrada sob o título FreeMyTV LDZ acompanha a versão instalada.
 - Fundos de paisagem e ilustrações do clima incluídos no APK e disponíveis offline.
 - Compatível com Android TV 9 ou superior; testado em TVs TCL com Android 9 e Android 11.
 

@@ -10,6 +10,8 @@ import android.content.pm.LauncherApps;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkRequest;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Matrix;
@@ -525,7 +527,11 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         data.addListener(this);
         recs.addListener(this);
         if (wifiManager != null && !wifiCallbackRegistered) {
-            try { wifiManager.registerDefaultNetworkCallback(wifiCallback, handler); wifiCallbackRegistered = true; }
+            try {
+                wifiManager.registerNetworkCallback(new NetworkRequest.Builder().clearCapabilities()
+                        .addTransportType(NetworkCapabilities.TRANSPORT_WIFI).build(), wifiCallback, handler);
+                wifiCallbackRegistered = true;
+            }
             catch (RuntimeException ignored) { }
         }
         data.refreshIfStale();
@@ -4130,7 +4136,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
                 fill.setColor(Ui.alpha(0xFFFFFFFF, f));
                 c.drawCircle(cell.centerX(), cell.centerY(), rad, fill);
             }
-            if (wifi) drawWifi(c, cell.centerX(), cell.centerY(), 31 * k * s,
+            if (wifi) drawWifi(c, cell.centerX(), cell.centerY(), 40 * k * s,
                     it.connected ? 0xFFFFFFFF : 0xFF9299A5);
             else Symbols.draw(getContext(), c, it.symbol, cell.centerX(), cell.centerY(), 27 * k * s,
                     Config.CUSTOM_SKIN ? blend(0xFFFFFFFF, L_INK, f) : blend(tone(L_INK, 0xEBFFFFFF), L_INK, f));
@@ -4155,21 +4161,22 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         wifiPaint.setStrokeCap(Paint.Cap.ROUND);
         wifiPaint.setStrokeJoin(Paint.Join.ROUND);
         wifiPaint.setStyle(Paint.Style.STROKE);
-        // Three clean, nested radio waves. Keep the center empty so the status stays legible at TV distance.
-        for (int i = 0; i < 3; i++) {
-            float half = size * (0.46f - i * 0.145f);
-            float base = cy + size * (0.27f - i * 0.10f);
-            float crown = cy - size * (0.34f - i * 0.10f);
-            wifiPath.reset();
-            wifiPath.moveTo(cx - half, base);
-            wifiPath.quadTo(cx, crown, cx + half, base);
-            // A slim contrasting edge keeps white/gray status strokes readable over bright or dark wallpapers.
-            wifiPaint.setColor(0x88000000);
-            wifiPaint.setStrokeWidth(Math.max(3.8f * k, size * 0.16f));
-            c.drawPath(wifiPath, wifiPaint);
+        // Three distinct, nested arcs read as Wi-Fi at a glance; there is deliberately no center dot.
+        float[] rx = {0.47f, 0.32f, 0.17f};
+        float[] ry = {0.38f, 0.265f, 0.145f};
+        wifiPaint.setStyle(Paint.Style.STROKE);
+        wifiPaint.setStrokeCap(Paint.Cap.ROUND);
+        wifiPaint.setStrokeJoin(Paint.Join.ROUND);
+        for (int i = 0; i < rx.length; i++) {
+            float halfW = size * rx[i], halfH = size * ry[i];
+            RectF arc = new RectF(cx - halfW, cy - halfH, cx + halfW, cy + halfH);
+            // A narrow dark keyline keeps both white and gray states visible over bright/dark wallpapers.
+            wifiPaint.setColor(0x99000000);
+            wifiPaint.setStrokeWidth(Math.max(3.6f * k, size * 0.13f));
+            c.drawArc(arc, 210, 120, false, wifiPaint);
             wifiPaint.setColor(color);
-            wifiPaint.setStrokeWidth(Math.max(2.4f * k, size * 0.095f));
-            c.drawPath(wifiPath, wifiPaint);
+            wifiPaint.setStrokeWidth(Math.max(2.5f * k, size * 0.09f));
+            c.drawArc(arc, 210, 120, false, wifiPaint);
         }
         wifiPaint.setStyle(Paint.Style.FILL);
     }
