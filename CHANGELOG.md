@@ -1,5 +1,15 @@
 # Histórico de versões
 
+## 2.0.2
+- Arte azul do TV LDZ preenchendo o próprio card em “Todos os apps”.
+- Fundo azul da identidade em toda a coluna de marca dos Ajustes e ícone maior, acima dos textos.
+
+## 2.0.1
+- O ícone TV LDZ aparece em Todos os apps e na marca lateral dos Ajustes.
+- Relógio da home sem placa retangular; hora, data e clima usam sombra suave no texto.
+- Corrigido o fluxo de desinstalação dos apps fixados na prateleira.
+- Verificado o ciclo de atualização: não há recriação periódica da home.
+
 ## 1.5.5
 - Corrige a atualização manual em TVs TCL: a checagem e o início da instalação agora rodam enquanto a tela de ajustes está aberta, sem depender da permissão proprietária de início automático.
 - O ícone de Wi-Fi passa a observar redes Wi-Fi diretamente, mesmo quando Ethernet ou VPN é a rota principal, e redesenha as três ondas como arcos distintos.

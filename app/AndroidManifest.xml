@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="io.freemytv"
-    android:versionCode="24"
-    android:versionName="1.5.5">
+    android:versionCode="27"
+    android:versionName="2.0.2">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -17,6 +17,7 @@
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <!-- Updates from GitHub's releases (Updates): Android's installer still asks before each one. -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
     <!-- "Continue watching": what you left half-way in your apps, from Android TV's own Watch Next list. -->
     <uses-permission android:name="android.permission.READ_TV_LISTINGS" />
 

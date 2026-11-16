@@ -1,25 +1,25 @@
-# FreeMyTV LDZ
+# TV LDZ
 
-**Uma versão personalizada e não oficial do Free My TV**, um launcher para Google TV e Android TV. O projeto original de [simbasjungles/free-my-tv](https://github.com/simbasjungles/free-my-tv) foi a inspiração e a base do código. Este projeto é mantido separadamente por LuDeZam e não é afiliado, patrocinado ou endossado pelos mantenedores do original.
+**TV LDZ** é um launcher personalizado para Google TV e Android TV, inspirado no projeto [Free My TV de simbasjungles](https://github.com/simbasjungles/free-my-tv). Esta compilação é mantida separadamente por LuDeZam e não é afiliada, patrocinada ou endossada pelos mantenedores do projeto original.
 
-> Free My TV é o projeto original de simbasjungles. “FreeMyTV LDZ” identifica esta compilação comunitária personalizada; não reivindicamos a marca ou o logotipo do projeto original.
+> O nome deste projeto é TV LDZ. Free My TV é o projeto original que serviu de inspiração; os créditos e a licença do código original estão preservados nesta distribuição.
 
 ## Capturas de tela
 
-Capturas reais da versão 1.5.5 em uma TV TCL com Android TV. Use as setas do controle para navegar pelas categorias do menu.
+Capturas reais da versão 2.0.2 em uma TV TCL com Android TV. Use as setas do controle para navegar pelas categorias do menu.
 
 <table>
   <tr>
-    <td align="center"><strong>Tela inicial</strong><br><img src="docs/screenshots/home.png" alt="Home da FreeMyTV LDZ, com previsão do tempo, aplicativos e atalhos" width="420"></td>
-    <td align="center"><strong>Tela de descanso</strong><br><img src="docs/screenshots/tela-descanso.png" alt="Tela de descanso com paisagem, hora, data e clima" width="420"></td>
+    <td align="center"><strong>Tela inicial</strong><br><img src="docs/screenshots/home.png" alt="Tela inicial do TV LDZ, com previsão do tempo, aplicativos e atalhos" width="420"></td>
+    <td align="center"><strong>Todos os apps</strong><br><img src="docs/screenshots/todos-apps.png" alt="Grade de apps com a arte azul do TV LDZ preenchendo o card" width="420"></td>
   </tr>
   <tr>
     <td align="center"><strong>Ajustes · Aparência</strong><br><img src="docs/screenshots/ajustes-aparencia.png" alt="Ajustes de modo e nitidez do fundo, descanso, idioma, temperatura e tema" width="420"></td>
-    <td align="center"><strong>Ajustes · Sistema</strong><br><img src="docs/screenshots/sistema.png" alt="Tela de atualizações e opções de sistema, exibindo FreeMyTV LDZ 1.5.5" width="420"></td>
+    <td align="center"><strong>Tela de descanso</strong><br><img src="docs/screenshots/tela-descanso.png" alt="Tela de descanso com paisagem, hora, data e clima" width="420"></td>
   </tr>
   <tr>
     <td align="center"><strong>Escolha do fundo da home</strong><br><img src="docs/screenshots/fundo-tela-inicial.png" alt="Miniaturas disponíveis para o fundo da tela inicial" width="420"></td>
-    <td align="center"><strong>Escolha do fundo do descanso</strong><br><img src="docs/screenshots/fundo-tela-descanso.png" alt="Miniaturas disponíveis para o fundo da tela de descanso" width="420"></td>
+    <td align="center"><strong>Escolha do fundo do descanso</strong><br><img src="docs/screenshots/fundo-tela-descanso.png" alt="Miniaturas do descanso, com usar o fundo do início e alternar paisagens" width="420"></td>
   </tr>
 </table>
 
@@ -34,27 +34,26 @@ Em **Clima e horário**, a ilustração acompanha a condição do tempo e o per�
 
 ## Baixar
 
-- **FreeMyTV LDZ 1.5.5:** baixe `FreeMyTV-LDZ.apk` nos [Releases](https://github.com/ludezam/FreeMyTV-LDZ/releases/latest).
-- **Pacote com os três apps:** baixe `LDZ-TV-Apps.zip` nos Releases. Ele contém FreeMyTV LDZ, Tempo LDZ e Quadro LDZ como APKs independentes.
-- Tempo LDZ: [projeto e código](https://github.com/ludezam/tempoLDZ).
-- Quadro LDZ: [projeto, instruções e releases](https://github.com/ludezam/Quadro-LDZ).
+- **Versão publicada atualmente: 2.0.2.** Baixe o APK nos [Releases](https://github.com/ludezam/FreeMyTV-LDZ/releases/latest).
+- **Tempo LDZ:** [projeto, código e releases](https://github.com/ludezam/tempoLDZ), distribuído separadamente.
+- **Quadro LDZ:** [projeto, instruções e releases](https://github.com/ludezam/Quadro-LDZ), distribuído separadamente.
 
-O pacote não combina os aplicativos em um só: instale somente os APKs que quiser usar. Tempo 1.4 e Quadro 0.3.0 são builds de teste; consulte os repositórios de cada app para as limitações e instruções específicas.
+O lançamento atual de TV LDZ contém apenas este aplicativo. Tempo LDZ e Quadro LDZ não estão incluídos no APK nem no pacote da release.
 
-## O que muda nesta versão
+## Versão publicada: 2.0.2
 
-- O menu **Atualizações** consulta as releases do FreeMyTV LDZ. Em TVs TCL, a checagem manual funciona com a tela de ajustes aberta, mesmo quando o sistema bloqueia tarefas em segundo plano.
-- A instalação de cada atualização continua dependendo da confirmação do Android.
-- Em Aparência, o fundo inicial pode ser alternado entre desfocado e nítido.
-- Menu de configurações reorganizado nas categorias **Tela inicial**, **Aparência**, **Clima** e **Sistema**.
-- Relógio fixo no topo da tela inicial.
-- Remoção das opções Destaques, Widget tocando agora e Minhas fotos.
-- Remoção do ícone decorativo de Wi‑Fi na tela de ajustes.
-- Remoção das configurações, avisos e dados guardados do TMDB; as recomendações do TMDB deixam de ser exibidas.
-- O ícone de Wi‑Fi da tela inicial acompanha redes Wi‑Fi conectadas mesmo quando Ethernet ou VPN é a rota principal: branco quando conectado e cinza quando desconectado, com três ondas em arco e contorno para manter o contraste.
-- A versão mostrada sob o título FreeMyTV LDZ acompanha a versão instalada.
-- Fundos de paisagem e ilustrações do clima incluídos no APK e disponíveis offline.
-- Compatível com Android TV 9 ou superior; testado em TVs TCL com Android 9 e Android 11.
+- O ícone azul do TV LDZ preenche seu card em **Todos os apps**; a marca dos Ajustes combina com o mesmo fundo azul.
+- As opções de fundo inicial e de descanso são independentes e podem ser escolhidas por miniaturas.
+- Menu de configurações organizado nas categorias **Tela inicial**, **Aparência**, **Clima** e **Sistema**.
+- A tela de descanso mostra hora, data e clima sobre a paisagem escolhida.
+- O menu de contexto da prateleira permite mover, desafixar, desinstalar ou gerenciar aplicativos.
+- Em Aparência, o fundo inicial pode ser exibido desfocado ou nítido.
+- O menu **Atualizações** consulta as releases de TV LDZ; o Android pede confirmação ao instalar cada atualização.
+- Compatível com Android TV 9 ou superior; testado em TVs TCL com Android 9, Android 11 e Android 12.
+
+## Compatibilidade
+
+O pacote mantém o identificador Android `io.freemytv` para permitir atualização das versões LDZ anteriores. O projeto é inspirado no Free My TV original e mantido separadamente; os créditos e a licença do projeto original continuam incluídos.
 
 ## Instalar ou atualizar
 
@@ -65,7 +64,7 @@ adb connect IP_DA_TV:5555
 adb install -r FreeMyTV-LDZ.apk
 ```
 
-Na primeira instalação, selecione FreeMyTV LDZ no menu de apps e escolha **Free My TV** em **Tela inicial**. Se o Android perguntar, permita a depuração USB.
+Na primeira instalação, selecione **TV LDZ** no menu de apps e escolha **TV LDZ** em **Tela inicial**. Se o Android perguntar, permita a depuração USB.
 
 As versões LDZ são assinadas com uma chave privada de distribuição que não está neste repositório. Todas as futuras versões devem usar a mesma chave para que o Android aceite a atualização. Nunca envie o arquivo `.keystore` ou a chave privada ao GitHub.
 
@@ -82,7 +81,7 @@ O comando cria um APK genérico personalizado em `FreeMyTV-LDZ.apk`. Para public
 ## Créditos e licenças
 
 - **Free My TV**, de [simbasjungles](https://github.com/simbasjungles/free-my-tv): código sob MIT. O aviso e a licença originais estão em [`LICENSE`](LICENSE).
-- **Paisagens e ilustrações do clima:** geradas com IA pelo autor desta versão para o FreeMyTV LDZ. Consulte [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) para o escopo das permissões dos recursos.
+- **Paisagens, ilustrações do clima e identidade visual:** criadas com IA pelo autor desta versão para TV LDZ. Consulte [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) para os avisos de terceiros.
 - **Inter:** licença SIL Open Font License 1.1 em `app/assets/fonts/OFL.txt`.
 - **Material Symbols:** licença Apache 2.0 em `app/assets/symbols/LICENSE-material-symbols.txt`.
 

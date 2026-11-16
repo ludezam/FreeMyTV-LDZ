@@ -191,6 +191,11 @@ public class SettingsActivity extends Activity {
         // never while drawing.
         private KeyPage keyPage;
         private Bitmap keyQr;
+        private Bitmap brandIcon;
+        private final Rect brandBackgroundSource = new Rect();
+        private final RectF brandBackgroundDest = new RectF();
+        private final android.graphics.Path brandPanelClip = new android.graphics.Path();
+        private Paint brandBackgroundPaint;
         private boolean keyChecking;
         private int[] keyRowIds = new int[0];
         private StaticLayout keyPurpose, keySteps, keyStatus;
@@ -268,6 +273,9 @@ public class SettingsActivity extends Activity {
         SettingsView(SettingsActivity a) {
             super(a);
             activity = a;
+            android.graphics.BitmapFactory.Options iconOptions = new android.graphics.BitmapFactory.Options();
+            iconOptions.inSampleSize = 4;
+            brandIcon = android.graphics.BitmapFactory.decodeResource(a.getResources(), R.drawable.icon, iconOptions);
             for (int i = 0; i < pop.length; i++) pop[i] = new Spring(0.28f, 0.85f, 0);
             for (int i = 0; i < categoryPop.length; i++) categoryPop[i] = new Spring(0.28f, 0.85f, 0);
             HomeData.Weather wx = HomeData.get(a).weather;
@@ -275,7 +283,7 @@ public class SettingsActivity extends Activity {
             scene.setMotion(0.5f, 0.2f);
             scene.applyPalette();
             setFocusable(true);
-            setContentDescription("Free My TV");
+            setContentDescription("TV LDZ");
             installed = Updates.installedVersion(a);
             versionLine = (installed.isEmpty() ? "" : installed + " · ") + "TCL Android TV";
             scanWatchApps();
@@ -315,7 +323,7 @@ public class SettingsActivity extends Activity {
                     if (row == 0) {
                         String busyText = busyText();
                         String value = busy() ? (busyText.isEmpty() ? Ui.tr("Starting…") : busyText)
-                                : freeActive() ? "Free My TV" : Ui.tr("Original");
+                                : freeActive() ? "TV LDZ" : Ui.tr("Original");
                         return Ui.trf("Home Screen, {mode}", "mode", value);
                     }
                     String[] names = {Ui.tr("Screensaver, preview"), Ui.tr("Home Settings"), Ui.tr("Shelf"),
@@ -325,7 +333,7 @@ public class SettingsActivity extends Activity {
                 }
                 case MAIN_INFO: return Ui.tr("Back");
                 case HOME_CHOICE: {
-                    String name = row == 0 ? "Free My TV, " + Ui.tr("no ads, with the new screensaver")
+                    String name = row == 0 ? "TV LDZ, " + Ui.tr("no ads, with the new screensaver")
                             : "Original, " + Ui.tr("the TV's factory home screen");
                     boolean inUse = (row == 0) == freeActive();
                     return name + (inUse ? Ui.tr(". In use") : "") + ", " + Ui.trf("{i} of {n}", "i", row + 1, "n", 2);
@@ -524,6 +532,7 @@ public class SettingsActivity extends Activity {
             white.setColor(0xFFF5F5F7);
             shadow = new Paint(Paint.ANTI_ALIAS_FLAG);
             shadow.setMaskFilter(new BlurMaskFilter(22 * k, BlurMaskFilter.Blur.NORMAL));
+            brandBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
             keyHeading = Ui.text(Ui.displaySemibold, 34 * k, 0xFFFFFFFF);
             keyUrl = Ui.text(Ui.medium, 27 * k, 0xF2FFFFFF);
             qrPaint = new Paint();   // no filtering: each module stays a sharp square
@@ -555,6 +564,21 @@ public class SettingsActivity extends Activity {
             shellPaint.setStyle(Paint.Style.FILL);
             shellPaint.setColor(0x151C3551);
             c.drawRect(30 * k, 22 * k, 492 * k, h - 20 * k, shellPaint);
+            if (brandIcon != null) {
+                // Reuse the clean blue background area from the approved icon artwork across the full branding pane.
+                brandBackgroundSource.set(0, 0, brandIcon.getWidth(), Math.max(1, Math.round(brandIcon.getHeight() * 0.29f)));
+                brandBackgroundDest.set(30 * k, 22 * k, 492 * k, h - 20 * k);
+                brandPanelClip.reset();
+                brandPanelClip.addRoundRect(28 * k, 18 * k, 492 * k, h - 18 * k, 38 * k, 38 * k,
+                        android.graphics.Path.Direction.CW);
+                c.save();
+                c.clipPath(brandPanelClip);
+                c.drawBitmap(brandIcon, brandBackgroundSource, brandBackgroundDest, brandBackgroundPaint);
+                shellPaint.setColor(0x20002162);
+                c.drawRect(30 * k, 22 * k, 492 * k, h - 20 * k, shellPaint);
+                shellPaint.setColor(0x151C3551);
+                c.restore();
+            }
             c.drawLine(492 * k, 19 * k, 492 * k, h - 19 * k, dividerPaint);
             c.drawLine(520 * k, h - 75 * k, 1824 * k, h - 75 * k, dividerPaint);
 
@@ -626,8 +650,23 @@ public class SettingsActivity extends Activity {
 
             // On the left: big symbol, title, description.
             float cx = 248 * k;
-            Symbols.draw(getContext(), c, "sparkles", cx, 445 * k, 34 * k, 0xEBFFFFFF);
-            c.drawText("FreeMyTV LDZ", cx, 520 * k, title);
+            if (brandIcon != null) {
+                float size = 170 * k, top = 240 * k;
+                RectF iconRect = new RectF(cx - size / 2, top, cx + size / 2, top + size);
+                Paint iconPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
+                android.graphics.Path iconClip = new android.graphics.Path();
+                iconClip.addRoundRect(iconRect, 24 * k, 24 * k, android.graphics.Path.Direction.CW);
+                c.save();
+                c.clipPath(iconClip);
+                c.drawBitmap(brandIcon, null, iconRect, iconPaint);
+                c.restore();
+                Paint rim = new Paint(Paint.ANTI_ALIAS_FLAG);
+                rim.setStyle(Paint.Style.STROKE);
+                rim.setStrokeWidth(1.5f * k);
+                rim.setColor(0x66B9E7FF);
+                c.drawRoundRect(iconRect, 24 * k, 24 * k, rim);
+            } else Symbols.draw(getContext(), c, "sparkles", cx, 445 * k, 34 * k, 0xEBFFFFFF);
+            c.drawText("TV LDZ", cx, 520 * k, title);
             c.drawText(Ui.tr("Settings"), cx, 574 * k, subtitle);
             c.drawText(versionLine, cx, 640 * k, version);
 
@@ -643,7 +682,7 @@ public class SettingsActivity extends Activity {
         private void drawMain(Canvas c, float seconds) {
             boolean working = busy();
             String busyText = busyText();
-            String mode = freeActive() ? "Free My TV" : Ui.tr("Original");
+            String mode = freeActive() ? "TV LDZ" : Ui.tr("Original");
             String[] labels = {Ui.tr("Home Screen"), Ui.tr("Screensaver"),
                     Ui.tr("Home Settings"), Ui.tr("Shelf"), Ui.tr("Top Buttons"),
                     Ui.tr("Remote Buttons"), Ui.tr("Sleep Timer"), Ui.tr("TV Settings"), Ui.tr("More information")};
@@ -856,7 +895,7 @@ public class SettingsActivity extends Activity {
             c.drawText(Ui.tr("COMPARISON"), x, y, header);
             cellValue.setColor(0x73FFFFFF);
             c.drawText(Ui.tr("Original"), colA, y, cellValue);
-            c.drawText("Free My TV", colB, y, cellValue);
+            c.drawText("TV LDZ", colB, y, cellValue);
             cellValue.setColor(0xD9FFFFFF);
             JSONObject metrics = state.optJSONObject("metrics");
             JSONObject a = metrics == null ? null : metrics.optJSONObject(HomeMode.ORIGINAL);
@@ -891,7 +930,7 @@ public class SettingsActivity extends Activity {
         private void drawChoice(Canvas c) {
             Paint heading = Ui.text(Ui.displaySemibold, 34 * k, 0xFFFFFFFF);
             c.drawText(Ui.tr("Home Screen"), LIST_X * k + 30 * k, (LIST_TOP - 24) * k, heading);
-            String[][] options = {{"Free My TV", Ui.tr("No ads, with the new screensaver")},
+            String[][] options = {{"TV LDZ", Ui.tr("No ads, with the new screensaver")},
                     {Ui.tr("Original"), Ui.tr("The TV's factory home screen")}};
             int current = freeActive() ? 0 : 1;
             for (int i = 0; i < 2; i++) {
@@ -937,9 +976,9 @@ public class SettingsActivity extends Activity {
 
         private static String versionName(Context c) {
             try {
-                return "FreeMyTV LDZ " + c.getPackageManager().getPackageInfo(c.getPackageName(), 0).versionName;
+                return "TV LDZ " + c.getPackageManager().getPackageInfo(c.getPackageName(), 0).versionName;
             } catch (android.content.pm.PackageManager.NameNotFoundException e) {
-                return "FreeMyTV LDZ";
+                return "TV LDZ";
             }
         }
 
@@ -1150,7 +1189,7 @@ public class SettingsActivity extends Activity {
             String[] all = new String[base.length + 8];
             System.arraycopy(base, 0, all, 0, base.length);
             java.util.Arrays.fill(all, base.length, all.length, "›");
-            all[actionHomeRow()] = freeActive() ? "Free My TV" : Ui.tr("Original");
+            all[actionHomeRow()] = freeActive() ? "TV LDZ" : Ui.tr("Original");
             all[actionSaverRow()] = Ui.tr("Preview");
             all[actionSleepRow()] = sleepLeft == 0 ? Ui.tr("Off") : Ui.trf("{time} left", "time", SleepTimer.duration(sleepLeft));
             return all;
@@ -1499,7 +1538,7 @@ public class SettingsActivity extends Activity {
             // On Xiaomi the Mi button is the remote's Home button: it can open this home screen.
             if (RemoteKeys.XIAOMI) {
                 appPkgs.add(HomeMode.PKG);
-                appLabels.add("Free My TV");
+                appLabels.add("TV LDZ");
             }
             if (RemoteKeys.HISENSE) {
                 appPkgs.add(Prefs.ALL_APPS);

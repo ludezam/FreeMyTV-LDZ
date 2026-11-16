@@ -38,9 +38,12 @@ elif [ ! -f config.properties ]; then
   echo "Created config.properties: add your TMDB key and your city there (optional), then build again."
 fi
 # Notepad's "Unicode" is UTF-16: grep would find no keys in it and build every default without a word.
-case "$(head -c 2 "$CONFIG" 2>/dev/null | od -An -tx1 | tr -d ' \n')" in
-  fffe|feff) echo "config.properties is saved as UTF-16 (Notepad's \"Unicode\"). Save it as UTF-8 and build again." >&2; exit 1 ;;
-esac
+# Generic builds use /dev/null, so they do not need the byte-order-mark check (and can build without `od`).
+if ! $GENERIC; then
+  case "$(head -c 2 "$CONFIG" 2>/dev/null | od -An -tx1 | tr -d ' \n')" in
+    fffe|feff) echo "config.properties is saved as UTF-16 (Notepad's \"Unicode\"). Save it as UTF-8 and build again." >&2; exit 1 ;;
+  esac
+fi
 prop() {
   local v
   v="$(grep -E "^[[:space:]]*$1[[:space:]]*=" "$CONFIG" | tail -1 | cut -d= -f2- || true)"

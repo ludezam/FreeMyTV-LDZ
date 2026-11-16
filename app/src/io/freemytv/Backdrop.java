@@ -108,9 +108,11 @@ final class Backdrop {
                 int bw = blurred ? GW : W, bh = blurred ? GH : H;
                 int[] sharp = blurred ? reduce(out, bw, bh, 1, 1) : new int[bw * bh];
                 if (!blurred) out.getPixels(sharp, 0, bw, 0, 0, bw, bh);
-                int[] lightBg = Config.CUSTOM_SKIN ? ramp(sharp.clone(), bw, bh, 0.34f, 0.08f, false)
+                int[] lightBg = Config.CUSTOM_SKIN ? sharp.clone()
                         : ramp(sharp.clone(), bw, bh, 0.82f, 0.45f, true);
-                int[] nightBg = ramp(sharp, bw, bh, 0.76f, 0.5f, false);
+                // The clock now gets its own local feathered shadow in HomeView. Keep custom photos evenly lit
+                // instead of darkening the whole left half; retain a uniform night treatment for automatic theme.
+                int[] nightBg = Config.CUSTOM_SKIN ? darken(sharp, 0.48f) : ramp(sharp, bw, bh, 0.76f, 0.5f, false);
                 out.recycle();
                 return new Backdrop(null, frost, null, wide, light, lightGlass, night, nightGlass, lightBg, nightBg, bw, bh);
             }

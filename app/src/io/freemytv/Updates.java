@@ -450,7 +450,7 @@ final class Updates {
         HttpURLConnection h = (HttpURLConnection) new URL(url).openConnection();
         h.setConnectTimeout(10000);
         h.setReadTimeout(30000);
-        h.setRequestProperty("User-Agent", "FreeMyTV");
+        h.setRequestProperty("User-Agent", "TV-LDZ");
         return h;
     }
 

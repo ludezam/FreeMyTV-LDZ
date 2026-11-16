@@ -539,7 +539,6 @@ final class HomeApps {
         List<String> onShelf = shelfPackages(c);
         for (String[] d : SHELF) if (onShelf.contains(d[2])) skip.add(d[2]);
         skip.addAll(java.util.Arrays.asList(LIVE_TV_APPS));
-        skip.add(c.getPackageName());
         skip.addAll(HIDDEN);
         List<Item> items = new ArrayList<>();
         Set<String> seen = new HashSet<>();
@@ -558,7 +557,6 @@ final class HomeApps {
         synchronized (HomeApps.class) {
             TILES.keySet().removeIf(k -> k.contains(".") && !seen.contains(k));
         }
-        items.add(special(c, SETTINGS, "freemytv-settings", "FreeMyTV LDZ", "sparkles"));
         return items;
     }
 
@@ -1088,10 +1086,28 @@ final class HomeApps {
         String cacheKey = key != null ? key : pkg;
         if (TILES.containsKey(cacheKey)) return TILES.get(cacheKey);
         Bitmap logo = key == null ? null : ownLogo(c, key);
-        Bitmap tile = logo != null ? logoTile(logo, brand) : bannerTile(c, pkg);
+        Bitmap tile = pkg.equals(c.getPackageName()) ? fullIconTile(c)
+                : logo != null ? logoTile(logo, brand) : bannerTile(c, pkg);
         if (tile == null) tile = iconTile(c, pkg);
         tile.setHasMipMap(true);
         TILES.put(cacheKey, tile);
+        return tile;
+    }
+
+    /** TV LDZ's own app art fills the 16:9 card, preserving its proportions and cropping only the blue margins. */
+    private static Bitmap fullIconTile(Context c) {
+        Bitmap source = BitmapFactory.decodeResource(c.getResources(), R.drawable.icon);
+        if (source == null) return null;
+        Bitmap tile = Bitmap.createBitmap(TILE_W, TILE_H, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(tile);
+        float scale = Math.max(TILE_W / (float) source.getWidth(), TILE_H / (float) source.getHeight());
+        float width = source.getWidth() * scale, height = source.getHeight() * scale;
+        RectF dst = new RectF((TILE_W - width) / 2f, (TILE_H - height) / 2f,
+                (TILE_W + width) / 2f, (TILE_H + height) / 2f);
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
+        canvas.drawBitmap(source, null, dst, paint);
+        source.recycle();
+        tile.setHasMipMap(true);
         return tile;
     }
 
@@ -1137,6 +1153,7 @@ final class HomeApps {
         }
         if (icon == null) return darkTile(TILE_W, TILE_H);
         boolean adaptive = icon instanceof AdaptiveIconDrawable;
+        boolean roundedOwnIcon = pkg.equals(c.getPackageName());
         // Drawn at the icon's own resolution (the whole tile, so the squircle's edge is smooth too), then filtered down.
         float drawn = TILE_H * (adaptive ? 0.56f * 1.5f : 0.46f);
         float k = detail(icon, drawn, drawn);
@@ -1145,17 +1162,22 @@ final class HomeApps {
         Canvas canvas = new Canvas(b);
         int size = Math.round(th * 0.56f);
         float left = (tw - size) / 2f, top = (th - size) / 2f;
-        if (adaptive) {
+        if (adaptive || roundedOwnIcon) {
             // Adaptive icon: the layers in a squircle, like an Apple icon. Drawn apart, then filling an anti-aliased
             // rounded rectangle (clipPath leaves stair-stepped corners).
-            AdaptiveIconDrawable a = (AdaptiveIconDrawable) icon;
             Bitmap layers = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
             Canvas lc = new Canvas(layers);
-            int pad = size / 4;
-            for (Drawable layer : new Drawable[] {a.getBackground(), a.getForeground()}) {
-                if (layer == null) continue;
-                layer.setBounds(-pad, -pad, size + pad, size + pad);
-                layer.draw(lc);
+            if (adaptive) {
+                AdaptiveIconDrawable a = (AdaptiveIconDrawable) icon;
+                int pad = size / 4;
+                for (Drawable layer : new Drawable[] {a.getBackground(), a.getForeground()}) {
+                    if (layer == null) continue;
+                    layer.setBounds(-pad, -pad, size + pad, size + pad);
+                    layer.draw(lc);
+                }
+            } else {
+                icon.setBounds(0, 0, size, size);
+                icon.draw(lc);
             }
             int x = Math.round(left), y = Math.round(top);
             BitmapShader shader = new BitmapShader(layers, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
@@ -1164,7 +1186,17 @@ final class HomeApps {
             shader.setLocalMatrix(m);
             Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
             p.setShader(shader);
-            canvas.drawRoundRect(x, y, x + size, y + size, size * 0.2237f, size * 0.2237f, p);
+            float radius = size * 0.2237f;
+            canvas.drawRoundRect(x, y, x + size, y + size, radius, radius, p);
+            if (roundedOwnIcon) {
+                Paint rim = new Paint(Paint.ANTI_ALIAS_FLAG);
+                rim.setStyle(Paint.Style.STROKE);
+                rim.setStrokeWidth(Math.max(1f, size * 0.012f));
+                rim.setColor(0x66B9E7FF);
+                canvas.drawRoundRect(x + rim.getStrokeWidth() / 2, y + rim.getStrokeWidth() / 2,
+                        x + size - rim.getStrokeWidth() / 2, y + size - rim.getStrokeWidth() / 2,
+                        radius, radius, rim);
+            }
         } else {
             // Legacy icon (a free-form drawing with transparency): smaller, no frame.
             int s = Math.round(th * 0.46f);

@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.LauncherApps;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -135,7 +136,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         @Override public void click(int id) { activate(); }
         @Override public boolean clickable(int id) { return (id - 1) / 1000 != WIDGETS; }
         @Override public boolean holdable(int id) { return a11yHolds(id); }
-        @Override public void hold(int id) { if (sheetOpen) a11yHold(); else if (canReorder()) startReorder(); else showMenu(); }
+        @Override public void hold(int id) { if (sheetOpen) a11yHold(); else if (canManageShelf()) showShelfMenu(); else showMenu(); }
     });
     private final RectF a11yRect = new RectF();
     private final Layer sky, heroLayer, status, platter, tiles, drawerLayer, sheetLayer, toastLayer, menuLayer;
@@ -184,12 +185,15 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     // Holding OK on a card: a small menu (hide it, open the app, cancel) on its own layer, drawn only while it shows.
     private static final float MENU_W = 720, MENU_PAD = 44, MENU_INSET = 16, MENU_ROW = 76, MENU_STEP = 80, MENU_R = 36;
     private final Spring menu = new Spring(0.26f, 0.86f, 0), menuPick = new Spring(0.22f, 0.9f, 0);
-    private final String[] menuOptions = new String[3];
+    private final String[] menuOptions = new String[4];
     private final RectF menuPanel = new RectF();
     private final Set<String> hiddenNow = new HashSet<>();   // hidden this session (a reload already under way may not know)
     private boolean menuOpen;
     private int menuIndex;
     private WatchNext.Item menuItem;
+    private HomeApps.Item menuShelfItem;
+    private int menuCount = 3, menuDangerIndex;
+    private int menuMoveIndex = -1, menuUnpinIndex, menuManageIndex;
     private String menuTitle = "", menuSub = "";
     private float menuOptionsTop;
     private Paint menuTitlePaint, menuSubPaint, menuOptionPaint;
@@ -472,7 +476,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
             v.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);   // TalkBack reads the items (Spoken)
             addView(v);
         }
-        setContentDescription("Free My TV");
+        setContentDescription("TV LDZ");
         drawerLayer.setVisibility(INVISIBLE);
         menuLayer.setVisibility(INVISIBLE);
         for (int i = 0; i < topFocus.length; i++) {
@@ -755,6 +759,10 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         lClock = Ui.numbers(Ui.light, (Config.CUSTOM_SKIN ? 100 : 200) * k, L_INK);
         lClock.setLetterSpacing(-0.01f);
         lWeather = Ui.text(Ui.medium, (Config.CUSTOM_SKIN ? 27 : 34) * k, L_DIM);
+        if (Config.CUSTOM_SKIN) {
+            for (Paint p : new Paint[] {lDate, lClock, lWeather})
+                p.setShadowLayer(24 * k, 0, 2 * k, 0xB0000000);
+        }
         lClockQuote = Ui.numbers(Ui.medium, 28 * k, L_DIM);
         lightGradient = tintShade = null;
         buttonPaint = Ui.text(Ui.semibold, 29 * k, INK);
@@ -2513,7 +2521,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
                         okDown = true;
                         okHeld = false;
                         handler.removeCallbacks(holdStart);
-                        holdArmed = sheetOpen ? canToggleShelf(gridIndex) : canReorder() || canHold();
+                        holdArmed = sheetOpen ? canToggleShelf(gridIndex) : canManageShelf() || canHold();
                         if (holdArmed) handler.postDelayed(holdStart, HOLD_MS);
                     } else if (okDown && holdArmed && e.isLongPress()) {
                         hold();
@@ -2758,8 +2766,11 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     private void hold() {
         if (sheetOpen) {
             toggleShelf();
-        } else if (canReorder()) {
-            startReorder();
+        } else if (canManageShelf()) {
+            handler.removeCallbacks(holdStart);
+            holdArmed = false;
+            okDown = false;
+            showShelfMenu();
         } else if (canHold()) {
             handler.removeCallbacks(holdStart);
             holdArmed = false;
@@ -2830,6 +2841,37 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         if (sheetOpen || zone != Z_SHELF || shelfIndex >= shelf.size() || shelf.size() < 2) return false;
         HomeApps.Item it = shelf.get(shelfIndex);
         return it.kind == HomeApps.APP && it.pkg != null;
+    }
+
+    private boolean canManageShelf() {
+        if (sheetOpen || zone != Z_SHELF || shelfIndex >= shelf.size()) return false;
+        HomeApps.Item it = shelf.get(shelfIndex);
+        return it.kind == HomeApps.APP && it.pkg != null;
+    }
+
+    /** Long-press menu for a shelf app: move it, unpin it, or open Android's uninstall/manage screen. */
+    private void showShelfMenu() {
+        if (menuOpen || !canManageShelf() || menuTitlePaint == null) return;
+        menuShelfItem = shelf.get(shelfIndex);
+        menuItem = null;
+        menuTitle = TextUtils.ellipsize(menuShelfItem.label, new TextPaint(menuTitlePaint),
+                (MENU_W - 2 * MENU_PAD) * k, TextUtils.TruncateAt.END).toString();
+        menuSub = Ui.tr("Home shelf");
+        boolean system = false;
+        try {
+            system = (activity.getPackageManager().getApplicationInfo(menuShelfItem.pkg, 0).flags
+                    & android.content.pm.ApplicationInfo.FLAG_SYSTEM) != 0;
+        } catch (PackageManager.NameNotFoundException ignored) {}
+        menuMoveIndex = canReorder() ? 0 : -1;
+        menuUnpinIndex = menuMoveIndex >= 0 ? 1 : 0;
+        menuManageIndex = menuUnpinIndex + 1;
+        menuOptions[menuUnpinIndex] = Ui.tr("Unpin from shelf");
+        menuOptions[menuManageIndex] = Ui.tr(system ? "Manage app" : "Uninstall app");
+        menuCount = menuManageIndex + 2;
+        if (menuMoveIndex >= 0) menuOptions[menuMoveIndex] = Ui.tr("Move");
+        menuOptions[menuCount - 1] = Ui.tr("Cancel");
+        menuDangerIndex = menuUnpinIndex;
+        showMenuPanel();
     }
 
     private void startReorder() {
@@ -3010,7 +3052,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
 
     private void a11yItems(List<Integer> out) {
         if (menuOpen) {
-            for (int i = 0; i < menuOptions.length; i++) out.add(a11yId(MENU_ITEMS, i));
+            for (int i = 0; i < menuCount; i++) out.add(a11yId(MENU_ITEMS, i));
             return;
         }
         if (sheetOpen) {
@@ -3030,9 +3072,10 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         int group = (id - 1) / 1000, i = (id - 1) % 1000;
         switch (group) {
             case MENU_ITEMS:
-                if (!menuOpen || i >= menuOptions.length) return "";
-                return (i == 0 && menuItem != null ? menuItem.title + ". " : "") + menuOptions[i] + ", "
-                        + Ui.trf("{i} of {n}", "i", i + 1, "n", menuOptions.length);
+                if (!menuOpen || i >= menuCount) return "";
+                String itemName = menuItem != null ? menuItem.title : menuShelfItem != null ? menuShelfItem.label : "";
+                return (i == 0 && !itemName.isEmpty() ? itemName + ". " : "") + menuOptions[i] + ", "
+                        + Ui.trf("{i} of {n}", "i", i + 1, "n", menuCount);
             case GRID:
                 if (i >= others.size()) return "";
                 return label(others, i) + ", " + Ui.trf("{i} of {n}", "i", i + 1, "n", others.size());
@@ -3067,7 +3110,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         float dy;
         switch (group) {
             case MENU_ITEMS:
-                if (!menuOpen || i >= menuOptions.length) return false;
+                if (!menuOpen || i >= menuCount) return false;
                 menuRow(i, a11yRect);
                 dy = 0;
                 break;
@@ -3126,7 +3169,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         int group = (id - 1) / 1000, i = (id - 1) % 1000;
         if (group == GRID) return canToggleShelf(i);
         if (group == Z_SHELF) {   // TalkBack's long click lifts the app, as holding OK does
-            return !reordering && !menuOpen && !sheetOpen && shelf.size() > 1 && i < shelf.size()
+            return !reordering && !menuOpen && !sheetOpen && i < shelf.size()
                     && shelf.get(i).kind == HomeApps.APP && shelf.get(i).pkg != null;
         }
         return group == Z_WATCH && !menuOpen && continueMode() && i < watching.size();
@@ -3167,7 +3210,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         wake();
         int group = (id - 1) / 1000, i = (id - 1) % 1000;
         if (menuOpen) {
-            if (group == MENU_ITEMS && i < menuOptions.length && i != menuIndex) moveMenu(i - menuIndex);
+            if (group == MENU_ITEMS && i < menuCount && i != menuIndex) moveMenu(i - menuIndex);
             return;
         }
         if (group == GRID) {
@@ -3666,6 +3709,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     private void showMenu() {
         if (menuOpen || !canHold() || menuTitlePaint == null) return;
         menuItem = watching.get(watchIndex);
+        menuShelfItem = null;
         float width = (MENU_W - 2 * MENU_PAD) * k;
         String title = menuItem.title + (menuItem.episode != null ? " · " + menuItem.episode : "");
         menuTitle = TextUtils.ellipsize(title, new TextPaint(menuTitlePaint), width, TextUtils.TruncateAt.END).toString();
@@ -3674,6 +3718,12 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         menuOptions[0] = Ui.tr("Hide from Continue Watching");
         menuOptions[1] = Ui.tr("Open the app");
         menuOptions[2] = Ui.tr("Cancel");
+        menuCount = 3;
+        menuDangerIndex = 0;
+        showMenuPanel();
+    }
+
+    private void showMenuPanel() {
         layoutMenu();
         menuOpen = true;
         menuIndex = 0;
@@ -3688,7 +3738,8 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
 
     /** The panel, centered on the screen: title, the app's name (if known) and the three options. */
     private void layoutMenu() {
-        float rows = (MENU_PAD + 34 + (menuSub.isEmpty() ? 0 : 38) + 32 + 2 * MENU_STEP + MENU_ROW + MENU_INSET) * k;
+        float rows = (MENU_PAD + 34 + (menuSub.isEmpty() ? 0 : 38) + 32
+                + (menuCount - 1) * MENU_STEP + MENU_ROW + MENU_INSET) * k;
         float left = (w - MENU_W * k) / 2, top = (h - rows) / 2;
         menuPanel.set(left, top, left + MENU_W * k, top + rows);
         menuOptionsTop = top + (MENU_PAD + 34 + (menuSub.isEmpty() ? 0 : 38) + 32) * k;
@@ -3752,7 +3803,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     }
 
     private void moveMenu(int d) {
-        int next = Math.max(0, Math.min(menuOptions.length - 1, menuIndex + d));
+        int next = Math.max(0, Math.min(menuCount - 1, menuIndex + d));
         if (next == menuIndex) return;
         menuIndex = next;
         menuPick.target = next;
@@ -3763,6 +3814,36 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     }
 
     private void pickMenu() {
+        if (menuShelfItem != null) {
+            HomeApps.Item it = menuShelfItem;
+            int choice = menuIndex;
+            closeMenu(false);
+            menuShelfItem = null;
+            if (choice == menuMoveIndex && menuMoveIndex >= 0) {
+                startReorder();
+            } else if (choice == menuUnpinIndex) {
+                List<String> save = new ArrayList<>(HomeApps.shelfPackages(getContext()));
+                save.remove(it.pkg);
+                Prefs.setShelf(save);
+                shelfEdited = true;
+                showToast(Ui.trf("Removed from the shelf: {app}", "app", it.label));
+                reload();
+            } else if (choice == menuManageIndex) {
+                Intent intent;
+                try {
+                    boolean system = (activity.getPackageManager().getApplicationInfo(it.pkg, 0).flags
+                            & android.content.pm.ApplicationInfo.FLAG_SYSTEM) != 0;
+                    intent = system
+                            ? new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + it.pkg))
+                            : new Intent(Intent.ACTION_UNINSTALL_PACKAGE, Uri.parse("package:" + it.pkg));
+                    if (!system) intent.putExtra(Intent.EXTRA_RETURN_RESULT, true);
+                    activity.startActivity(intent);
+                } catch (PackageManager.NameNotFoundException | ActivityNotFoundException | SecurityException e) {
+                    showToast(Ui.trf("Couldn't open {app}.", "app", it.label));
+                }
+            }
+            return;
+        }
         WatchNext.Item it = menuItem;
         int choice = menuIndex;
         closeMenu(false);
@@ -3829,10 +3910,10 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         fill.setColor(Ui.alpha(tone(L_INK, WHITE), a));
         c.drawRoundRect(tmp, rowR, rowR, fill);
         int ink = tone(L_INK, WHITE), onPill = tone(WHITE, L_INK);
-        for (int i = 0; i < menuOptions.length; i++) {
+        for (int i = 0; i < menuCount; i++) {
             menuRow(i, tmp);
             float f = Ui.clamp(1 - Math.abs(pick - i));
-            int base = i == 0 ? tone(0xFFD70015, 0xFFFF6961) : ink;   // hiding is the destructive one: red
+            int base = i == menuDangerIndex ? tone(0xFFD70015, 0xFFFF6961) : ink;
             menuOptionPaint.setColor(Ui.alpha(blend(base, onPill, f), a));
             c.drawText(menuOptions[i], tmp.left + 28 * k, tmp.centerY() + Ui.halfCap(menuOptionPaint), menuOptionPaint);
         }
@@ -4015,8 +4096,9 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         float x = MARGIN * k;
         float dateBase = (Config.CUSTOM_SKIN ? 198 : L_DATE_BASE) * k;
         float clockBase = (Config.CUSTOM_SKIN ? 132 : L_CLOCK_BASE) * k;
+        float clockLeft = x - Ui.leftBearing(lClock, clockText);
         c.drawText(dateText, x - Ui.leftBearing(lDate, dateText), dateBase, lDate);
-        c.drawText(clockText, x - Ui.leftBearing(lClock, clockText), clockBase, lClock);
+        c.drawText(clockText, clockLeft, clockBase, lClock);
         HomeData.Weather wx = data.weather;
         if (!Prefs.weather() || Double.isNaN(wx.temp)) return;
         if (data.weatherAt != weatherLineAt || Prefs.version != weatherLinePrefs || !Ui.language.equals(weatherLineLanguage)) {
@@ -4136,8 +4218,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
                 fill.setColor(Ui.alpha(0xFFFFFFFF, f));
                 c.drawCircle(cell.centerX(), cell.centerY(), rad, fill);
             }
-            if (wifi) drawWifi(c, cell.centerX(), cell.centerY(), 40 * k * s,
-                    it.connected ? 0xFFFFFFFF : 0xFF9299A5);
+            if (wifi) drawWifi(c, cell.centerX(), cell.centerY(), 40 * k * s, it.connected);
             else Symbols.draw(getContext(), c, it.symbol, cell.centerX(), cell.centerY(), 27 * k * s,
                     Config.CUSTOM_SKIN ? blend(0xFFFFFFFF, L_INK, f) : blend(tone(L_INK, 0xEBFFFFFF), L_INK, f));
             if (f > 0.01f) {
@@ -4155,30 +4236,35 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         Symbols.draw(getContext(), c, "bedtime", right - tw - size * 0.9f, cy, size, lQuote.getColor());
     }
 
-    private void drawWifi(Canvas c, float cx, float cy, float size, int color) {
-        wifiPaint.setColor(color);
-        wifiPaint.setStrokeWidth(Math.max(2.4f * k, size * 0.095f));
+    private void drawWifi(Canvas c, float cx, float cy, float size, boolean connected) {
+        if (!connected) {
+            wifiPaint.setStyle(Paint.Style.FILL);
+            wifiPaint.setColor(0xFFEF4444);
+            c.drawCircle(cx, cy, size * 0.64f, wifiPaint);
+        }
+        int color = 0xFFFFFFFF;
         wifiPaint.setStrokeCap(Paint.Cap.ROUND);
         wifiPaint.setStrokeJoin(Paint.Join.ROUND);
         wifiPaint.setStyle(Paint.Style.STROKE);
-        // Three distinct, nested arcs read as Wi-Fi at a glance; there is deliberately no center dot.
         float[] rx = {0.47f, 0.32f, 0.17f};
         float[] ry = {0.38f, 0.265f, 0.145f};
-        wifiPaint.setStyle(Paint.Style.STROKE);
-        wifiPaint.setStrokeCap(Paint.Cap.ROUND);
-        wifiPaint.setStrokeJoin(Paint.Join.ROUND);
         for (int i = 0; i < rx.length; i++) {
             float halfW = size * rx[i], halfH = size * ry[i];
             RectF arc = new RectF(cx - halfW, cy - halfH, cx + halfW, cy + halfH);
-            // A narrow dark keyline keeps both white and gray states visible over bright/dark wallpapers.
+            // The dark keyline keeps the white waves crisp on any wallpaper and inside the red offline badge.
             wifiPaint.setColor(0x99000000);
-            wifiPaint.setStrokeWidth(Math.max(3.6f * k, size * 0.13f));
+            wifiPaint.setStrokeWidth(Math.max(4f * k, size * 0.15f));
             c.drawArc(arc, 210, 120, false, wifiPaint);
             wifiPaint.setColor(color);
-            wifiPaint.setStrokeWidth(Math.max(2.5f * k, size * 0.09f));
+            wifiPaint.setStrokeWidth(Math.max(3f * k, size * 0.105f));
             c.drawArc(arc, 210, 120, false, wifiPaint);
         }
+        float dot = size * 0.075f;
         wifiPaint.setStyle(Paint.Style.FILL);
+        wifiPaint.setColor(0x99000000);
+        c.drawCircle(cx, cy + size * 0.34f, dot + Math.max(2.5f * k, size * 0.05f), wifiPaint);
+        wifiPaint.setColor(color);
+        c.drawCircle(cx, cy + size * 0.34f, dot, wifiPaint);
     }
 
     private boolean moveLight(int dx, int dy) {
