@@ -1,5 +1,9 @@
 # Histórico de versões
 
+## 2.0.4
+- Restaura as opções de fundo da Tela inicial, da Tela de descanso e de nitidez, ausentes na 2.0.3 por uma configuração de compilação incorreta.
+- Mantém o novo painel lateral de vidro dos Ajustes.
+
 ## 2.0.3
 - Redesenha o painel lateral dos Ajustes como uma superfície contínua de vidro azul, com curvas, reflexos e TV vetorial com estrelas.
 - Mantém os textos e a navegação do menu como elementos nativos da interface.
