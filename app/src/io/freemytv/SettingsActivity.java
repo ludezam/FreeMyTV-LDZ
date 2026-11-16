@@ -191,11 +191,19 @@ public class SettingsActivity extends Activity {
         // never while drawing.
         private KeyPage keyPage;
         private Bitmap keyQr;
-        private Bitmap brandIcon;
-        private final Rect brandBackgroundSource = new Rect();
-        private final RectF brandBackgroundDest = new RectF();
+        // The left brand rail is drawn as one light Canvas composition, rather than an icon card on a bitmap crop.
+        private final RectF brandPanelRect = new RectF(), brandTvRect = new RectF(), brandScreenRect = new RectF();
         private final android.graphics.Path brandPanelClip = new android.graphics.Path();
-        private Paint brandBackgroundPaint;
+        private final android.graphics.Path brandTopSweep = new android.graphics.Path();
+        private final android.graphics.Path brandLowerSweep = new android.graphics.Path();
+        private final android.graphics.Path brandScreenGlint = new android.graphics.Path();
+        private final android.graphics.Path brandFootLeft = new android.graphics.Path();
+        private final android.graphics.Path brandFootRight = new android.graphics.Path();
+        private final android.graphics.Path brandStarLarge = new android.graphics.Path();
+        private final android.graphics.Path brandStarSmall = new android.graphics.Path();
+        private Paint brandBasePaint, brandGlowPaint, brandSweepPaint, brandSweepEdgePaint;
+        private Paint brandTvGlowPaint, brandTvBodyPaint, brandTvRimPaint, brandScreenPaint;
+        private Paint brandScreenRimPaint, brandScreenGlintPaint, brandStarPaint, brandFootPaint;
         private boolean keyChecking;
         private int[] keyRowIds = new int[0];
         private StaticLayout keyPurpose, keySteps, keyStatus;
@@ -273,9 +281,6 @@ public class SettingsActivity extends Activity {
         SettingsView(SettingsActivity a) {
             super(a);
             activity = a;
-            android.graphics.BitmapFactory.Options iconOptions = new android.graphics.BitmapFactory.Options();
-            iconOptions.inSampleSize = 4;
-            brandIcon = android.graphics.BitmapFactory.decodeResource(a.getResources(), R.drawable.icon, iconOptions);
             for (int i = 0; i < pop.length; i++) pop[i] = new Spring(0.28f, 0.85f, 0);
             for (int i = 0; i < categoryPop.length; i++) categoryPop[i] = new Spring(0.28f, 0.85f, 0);
             HomeData.Weather wx = HomeData.get(a).weather;
@@ -532,7 +537,6 @@ public class SettingsActivity extends Activity {
             white.setColor(0xFFF5F5F7);
             shadow = new Paint(Paint.ANTI_ALIAS_FLAG);
             shadow.setMaskFilter(new BlurMaskFilter(22 * k, BlurMaskFilter.Blur.NORMAL));
-            brandBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
             keyHeading = Ui.text(Ui.displaySemibold, 34 * k, 0xFFFFFFFF);
             keyUrl = Ui.text(Ui.medium, 27 * k, 0xF2FFFFFF);
             qrPaint = new Paint();   // no filtering: each module stays a sharp square
@@ -540,6 +544,48 @@ public class SettingsActivity extends Activity {
             qrSlot = new Paint(Paint.ANTI_ALIAS_FLAG);
             qrSlot.setColor(0x14FFFFFF);
             shellPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            brandBasePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            brandGlowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            brandSweepPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            brandSweepEdgePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            brandSweepEdgePaint.setStyle(Paint.Style.STROKE);
+            brandSweepEdgePaint.setStrokeWidth(1.4f * k);
+            brandTvGlowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            brandTvBodyPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            brandTvRimPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            brandTvRimPaint.setStyle(Paint.Style.STROKE);
+            brandTvRimPaint.setStrokeWidth(4.2f * k);
+            brandScreenPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            brandScreenRimPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            brandScreenRimPaint.setStyle(Paint.Style.STROKE);
+            brandScreenRimPaint.setStrokeWidth(1.5f * k);
+            brandScreenGlintPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            brandStarPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            brandFootPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            brandFootPaint.setStyle(Paint.Style.STROKE);
+            brandFootPaint.setStrokeCap(Paint.Cap.ROUND);
+            brandFootPaint.setStrokeJoin(Paint.Join.ROUND);
+            brandFootPaint.setStrokeWidth(7 * k);
+            brandBasePaint.setShader(new android.graphics.LinearGradient(0, 18 * k, 0, h - 18 * k,
+                    new int[]{0xFF082357, 0xFF0B3D91, 0xFF092C6D, 0xFF061B43}, null,
+                    android.graphics.Shader.TileMode.CLAMP));
+            brandGlowPaint.setShader(new android.graphics.RadialGradient(210 * k, 320 * k, 360 * k,
+                    new int[]{0x6631CFFF, 0x24158CFF, 0x00051A48}, null, android.graphics.Shader.TileMode.CLAMP));
+            brandTvGlowPaint.setShader(new android.graphics.RadialGradient(260 * k, 320 * k, 178 * k,
+                    new int[]{0xA32EDFFF, 0x4930BFFF, 0x00052C88}, null, android.graphics.Shader.TileMode.CLAMP));
+            brandTvBodyPaint.setShader(new android.graphics.LinearGradient(130 * k, 250 * k, 390 * k, 390 * k,
+                    new int[]{0xB33CBAFF, 0xCC0D4DAB, 0xCC092D75}, null,
+                    android.graphics.Shader.TileMode.CLAMP));
+            brandTvRimPaint.setColor(0xC7A5F6FF);
+            brandScreenPaint.setShader(new android.graphics.LinearGradient(0, 260 * k, 0, 378 * k,
+                    new int[]{0xEE0A2A75, 0xDD087FD1, 0xF2092D79}, null,
+                    android.graphics.Shader.TileMode.CLAMP));
+            brandScreenRimPaint.setColor(0xA8D5FFFF);
+            brandScreenGlintPaint.setColor(0x2BFFFFFF);
+            brandStarPaint.setColor(0xFFF4FDFF);
+            brandFootPaint.setColor(0xDB86EFFF);
+            makeBrandStar(brandStarLarge, 22 * k);
+            makeBrandStar(brandStarSmall, 12 * k);
             dividerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             dividerPaint.setColor(0x39486682);
             dividerPaint.setStrokeWidth(1.2f * k);
@@ -552,6 +598,121 @@ public class SettingsActivity extends Activity {
             clockMinute = System.currentTimeMillis() / 60_000L;
         }
 
+        private static void makeBrandStar(android.graphics.Path path, float r) {
+            path.reset();
+            path.moveTo(0, -r);
+            path.cubicTo(r * .12f, -r * .30f, r * .30f, -r * .12f, r, 0);
+            path.cubicTo(r * .30f, r * .12f, r * .12f, r * .30f, 0, r);
+            path.cubicTo(-r * .12f, r * .30f, -r * .30f, r * .12f, -r, 0);
+            path.cubicTo(-r * .30f, -r * .12f, -r * .12f, -r * .30f, 0, -r);
+            path.close();
+        }
+
+        /** Full-bleed blue glass surface, with low-contrast sweeps running from edge to edge. */
+        private void drawBrandSurface(Canvas c) {
+            brandPanelRect.set(28 * k, 18 * k, 492 * k, h - 18 * k);
+            brandPanelClip.reset();
+            brandPanelClip.addRoundRect(brandPanelRect, 38 * k, 38 * k, android.graphics.Path.Direction.CW);
+            c.save();
+            c.clipPath(brandPanelClip);
+            c.drawRect(brandPanelRect, brandBasePaint);
+            c.drawRect(brandPanelRect, brandGlowPaint);
+
+            brandTopSweep.reset();
+            brandTopSweep.moveTo(28 * k, 320 * k);
+            brandTopSweep.cubicTo(150 * k, 220 * k, 300 * k, 230 * k, 492 * k, 75 * k);
+            brandTopSweep.lineTo(492 * k, 238 * k);
+            brandTopSweep.cubicTo(350 * k, 358 * k, 170 * k, 305 * k, 28 * k, 430 * k);
+            brandTopSweep.close();
+            brandSweepPaint.setColor(0x1027C9FF);
+            c.drawPath(brandTopSweep, brandSweepPaint);
+            brandSweepEdgePaint.setColor(0x3D9AEFFF);
+            brandTopSweep.reset();
+            brandTopSweep.moveTo(28 * k, 430 * k);
+            brandTopSweep.cubicTo(170 * k, 305 * k, 350 * k, 358 * k, 492 * k, 238 * k);
+            c.drawPath(brandTopSweep, brandSweepEdgePaint);
+
+            brandLowerSweep.reset();
+            brandLowerSweep.moveTo(28 * k, h - 225 * k);
+            brandLowerSweep.cubicTo(155 * k, h - 170 * k, 310 * k, h - 95 * k, 492 * k, h - 205 * k);
+            brandLowerSweep.lineTo(492 * k, h - 18 * k);
+            brandLowerSweep.lineTo(28 * k, h - 18 * k);
+            brandLowerSweep.close();
+            brandSweepPaint.setColor(0x121FA5FF);
+            c.drawPath(brandLowerSweep, brandSweepPaint);
+            brandSweepEdgePaint.setColor(0x2679CFFF);
+            brandLowerSweep.reset();
+            brandLowerSweep.moveTo(28 * k, h - 225 * k);
+            brandLowerSweep.cubicTo(155 * k, h - 170 * k, 310 * k, h - 95 * k, 492 * k, h - 205 * k);
+            c.drawPath(brandLowerSweep, brandSweepEdgePaint);
+
+            // Fine top and bottom reflections add depth without a continuously animated blur.
+            brandSweepEdgePaint.setStrokeWidth(1 * k);
+            brandSweepEdgePaint.setColor(0x3574BFFF);
+            c.drawLine(72 * k, 42 * k, 420 * k, 42 * k, brandSweepEdgePaint);
+            c.drawLine(72 * k, h - 42 * k, 420 * k, h - 42 * k, brandSweepEdgePaint);
+            c.restore();
+            brandSweepEdgePaint.setStrokeWidth(1.4f * k);
+            brandSweepEdgePaint.setColor(0x667DD6FF);
+            c.drawRoundRect(brandPanelRect, 38 * k, 38 * k, brandSweepEdgePaint);
+        }
+
+        /** Small vector TV with a luminous glass screen and the three app stars. */
+        private void drawBrandTelevision(Canvas c, float cx) {
+            float top = 250 * k;
+            brandTvRect.set(cx - 126 * k, top, cx + 126 * k, 374 * k);
+            brandScreenRect.set(brandTvRect.left + 10 * k, brandTvRect.top + 10 * k,
+                    brandTvRect.right - 10 * k, brandTvRect.bottom - 10 * k);
+            c.drawRoundRect(cx - 158 * k, top - 32 * k, cx + 158 * k, 414 * k,
+                    110 * k, 110 * k, brandTvGlowPaint);
+
+            // Two short side feet, drawn as strokes so they remain crisp at different TV resolutions.
+            brandFootLeft.reset();
+            brandFootLeft.moveTo(cx - 82 * k, 376 * k);
+            brandFootLeft.lineTo(cx - 100 * k, 397 * k);
+            brandFootRight.reset();
+            brandFootRight.moveTo(cx + 82 * k, 376 * k);
+            brandFootRight.lineTo(cx + 100 * k, 397 * k);
+            c.drawPath(brandFootLeft, brandFootPaint);
+            c.drawPath(brandFootRight, brandFootPaint);
+
+            brandTvBodyPaint.setColor(0xFF64DFFF);
+            c.drawRoundRect(brandTvRect.left - 3 * k, brandTvRect.top - 3 * k,
+                    brandTvRect.right + 3 * k, brandTvRect.bottom + 3 * k, 26 * k, 26 * k, brandTvBodyPaint);
+            brandTvBodyPaint.setColor(0xB60A397F);
+            c.drawRoundRect(brandTvRect, 23 * k, 23 * k, brandTvBodyPaint);
+            c.drawRoundRect(brandTvRect, 23 * k, 23 * k, brandTvRimPaint);
+            c.drawRoundRect(brandScreenRect, 15 * k, 15 * k, brandScreenPaint);
+            c.drawRoundRect(brandScreenRect, 15 * k, 15 * k, brandScreenRimPaint);
+
+            c.save();
+            c.clipRect(brandScreenRect.left + 2 * k, brandScreenRect.top + 2 * k,
+                    brandScreenRect.right - 2 * k, brandScreenRect.bottom - 2 * k);
+            brandScreenGlint.reset();
+            brandScreenGlint.moveTo(brandScreenRect.left, brandScreenRect.top + 12 * k);
+            brandScreenGlint.cubicTo(cx - 30 * k, brandScreenRect.top + 25 * k,
+                    cx + 30 * k, brandScreenRect.top + 35 * k, brandScreenRect.right, brandScreenRect.top + 8 * k);
+            brandScreenGlint.lineTo(brandScreenRect.right, brandScreenRect.top + 26 * k);
+            brandScreenGlint.cubicTo(cx + 35 * k, brandScreenRect.top + 48 * k,
+                    cx - 34 * k, brandScreenRect.top + 28 * k, brandScreenRect.left, brandScreenRect.top + 31 * k);
+            brandScreenGlint.close();
+            c.drawPath(brandScreenGlint, brandScreenGlintPaint);
+            c.restore();
+
+            c.save();
+            c.translate(cx, 311 * k);
+            c.drawPath(brandStarLarge, brandStarPaint);
+            c.restore();
+            c.save();
+            c.translate(cx - 35 * k, 326 * k);
+            c.drawPath(brandStarSmall, brandStarPaint);
+            c.restore();
+            c.save();
+            c.translate(cx + 37 * k, 332 * k);
+            c.drawPath(brandStarSmall, brandStarPaint);
+            c.restore();
+        }
+
         /** Quiet, framed settings canvas shared by the dashboard and its inner pages. */
         private void drawSettingsShell(Canvas c) {
             shellPaint.setStyle(Paint.Style.FILL);
@@ -561,24 +722,7 @@ public class SettingsActivity extends Activity {
             shellPaint.setStrokeWidth(1.5f * k);
             shellPaint.setColor(0x663D5D7E);
             c.drawRoundRect(28 * k, 18 * k, 1892 * k, h - 18 * k, 38 * k, 38 * k, shellPaint);
-            shellPaint.setStyle(Paint.Style.FILL);
-            shellPaint.setColor(0x151C3551);
-            c.drawRect(30 * k, 22 * k, 492 * k, h - 20 * k, shellPaint);
-            if (brandIcon != null) {
-                // Reuse the clean blue background area from the approved icon artwork across the full branding pane.
-                brandBackgroundSource.set(0, 0, brandIcon.getWidth(), Math.max(1, Math.round(brandIcon.getHeight() * 0.29f)));
-                brandBackgroundDest.set(30 * k, 22 * k, 492 * k, h - 20 * k);
-                brandPanelClip.reset();
-                brandPanelClip.addRoundRect(28 * k, 18 * k, 492 * k, h - 18 * k, 38 * k, 38 * k,
-                        android.graphics.Path.Direction.CW);
-                c.save();
-                c.clipPath(brandPanelClip);
-                c.drawBitmap(brandIcon, brandBackgroundSource, brandBackgroundDest, brandBackgroundPaint);
-                shellPaint.setColor(0x20002162);
-                c.drawRect(30 * k, 22 * k, 492 * k, h - 20 * k, shellPaint);
-                shellPaint.setColor(0x151C3551);
-                c.restore();
-            }
+            drawBrandSurface(c);
             c.drawLine(492 * k, 19 * k, 492 * k, h - 19 * k, dividerPaint);
             c.drawLine(520 * k, h - 75 * k, 1824 * k, h - 75 * k, dividerPaint);
 
@@ -648,24 +792,9 @@ public class SettingsActivity extends Activity {
                 drawSettingsShell(c);
             }
 
-            // On the left: big symbol, title, description.
-            float cx = 248 * k;
-            if (brandIcon != null) {
-                float size = 170 * k, top = 240 * k;
-                RectF iconRect = new RectF(cx - size / 2, top, cx + size / 2, top + size);
-                Paint iconPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
-                android.graphics.Path iconClip = new android.graphics.Path();
-                iconClip.addRoundRect(iconRect, 24 * k, 24 * k, android.graphics.Path.Direction.CW);
-                c.save();
-                c.clipPath(iconClip);
-                c.drawBitmap(brandIcon, null, iconRect, iconPaint);
-                c.restore();
-                Paint rim = new Paint(Paint.ANTI_ALIAS_FLAG);
-                rim.setStyle(Paint.Style.STROKE);
-                rim.setStrokeWidth(1.5f * k);
-                rim.setColor(0x66B9E7FF);
-                c.drawRoundRect(iconRect, 24 * k, 24 * k, rim);
-            } else Symbols.draw(getContext(), c, "sparkles", cx, 445 * k, 34 * k, 0xEBFFFFFF);
+            // Native text stays separate from the glass artwork and remains accessible to the existing UI.
+            float cx = 260 * k;
+            drawBrandTelevision(c, cx);
             c.drawText("TV LDZ", cx, 520 * k, title);
             c.drawText(Ui.tr("Settings"), cx, 574 * k, subtitle);
             c.drawText(versionLine, cx, 640 * k, version);

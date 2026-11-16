@@ -6,7 +6,7 @@
 
 ## Capturas de tela
 
-Capturas reais da versão 2.0.2 em uma TV TCL com Android TV. Use as setas do controle para navegar pelas categorias do menu.
+Capturas reais da versão 2.0.2 em uma TV TCL com Android TV. A versão 2.0.3 também atualiza o painel lateral dos Ajustes. Use as setas do controle para navegar pelas categorias do menu.
 
 <table>
   <tr>
@@ -34,15 +34,16 @@ Em **Clima e horário**, a ilustração acompanha a condição do tempo e o per�
 
 ## Baixar
 
-- **Versão publicada atualmente: 2.0.2.** Baixe o APK nos [Releases](https://github.com/ludezam/FreeMyTV-LDZ/releases/latest).
+- **Versão publicada atualmente: 2.0.3.** Baixe o APK nos [Releases](https://github.com/ludezam/FreeMyTV-LDZ/releases/latest).
 - **Tempo LDZ:** [projeto, código e releases](https://github.com/ludezam/tempoLDZ), distribuído separadamente.
 - **Quadro LDZ:** [projeto, instruções e releases](https://github.com/ludezam/Quadro-LDZ), distribuído separadamente.
 
 O lançamento atual de TV LDZ contém apenas este aplicativo. Tempo LDZ e Quadro LDZ não estão incluídos no APK nem no pacote da release.
 
-## Versão publicada: 2.0.2
+## Versão publicada: 2.0.3
 
-- O ícone azul do TV LDZ preenche seu card em **Todos os apps**; a marca dos Ajustes combina com o mesmo fundo azul.
+- O painel lateral dos Ajustes agora é uma superfície contínua de vidro azul, com curvas e reflexos, e uma TV vetorial luminosa com as três estrelas.
+- O card do TV LDZ continua usando a arte azul até as bordas em **Todos os apps**.
 - As opções de fundo inicial e de descanso são independentes e podem ser escolhidas por miniaturas.
 - Menu de configurações organizado nas categorias **Tela inicial**, **Aparência**, **Clima** e **Sistema**.
 - A tela de descanso mostra hora, data e clima sobre a paisagem escolhida.

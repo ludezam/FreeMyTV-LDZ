@@ -1,5 +1,9 @@
 # Histórico de versões
 
+## 2.0.3
+- Redesenha o painel lateral dos Ajustes como uma superfície contínua de vidro azul, com curvas, reflexos e TV vetorial com estrelas.
+- Mantém os textos e a navegação do menu como elementos nativos da interface.
+
 ## 2.0.2
 - Arte azul do TV LDZ preenchendo o próprio card em “Todos os apps”.
 - Fundo azul da identidade em toda a coluna de marca dos Ajustes e ícone maior, acima dos textos.
