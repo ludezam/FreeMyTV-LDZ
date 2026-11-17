@@ -7,4 +7,7 @@
 **/*.keystore
 **/*.jks
 /outputs/
+/TV LDZ 2.0.4/
+/.gitignore apoio/
 app/assets/custom/
+
