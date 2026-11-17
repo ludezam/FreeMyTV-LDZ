@@ -6,7 +6,7 @@
 
 ## Capturas de tela
 
-Capturas reais da versão 2.0.2 em uma TV TCL com Android TV. A versão 2.0.4 mantém o novo painel lateral dos Ajustes e restaura as opções de fundo. Use as setas do controle para navegar pelas categorias do menu.
+Capturas reais da versão 2.0.2 em uma TV TCL com Android TV. A versão 2.0.5 mantém o novo painel lateral dos Ajustes e restaura as opções de fundo. Use as setas do controle para navegar pelas categorias do menu.
 
 <table>
   <tr>
@@ -34,13 +34,19 @@ Em **Clima e horário**, a ilustração acompanha a condição do tempo e o per�
 
 ## Baixar
 
-- **Versão publicada atualmente: 2.0.4.** Baixe o APK nos [Releases](https://github.com/ludezam/FreeMyTV-LDZ/releases/latest).
+- **Versão publicada atualmente: 2.0.5.** Baixe o APK nos [Releases](https://github.com/ludezam/TV-LDZ/releases/latest).
 - **Tempo LDZ:** [projeto, código e releases](https://github.com/ludezam/tempoLDZ), distribuído separadamente.
 - **Quadro LDZ:** [projeto, instruções e releases](https://github.com/ludezam/Quadro-LDZ), distribuído separadamente.
 
 O lançamento atual de TV LDZ contém apenas este aplicativo. Tempo LDZ e Quadro LDZ não estão incluídos no APK nem no pacote da release.
 
-## Versão publicada: 2.0.4
+## Versão publicada: 2.0.5
+
+- Direciona o atualizador integrado para o repositório renomeado [ludezam/TV-LDZ](https://github.com/ludezam/TV-LDZ), mantendo a checagem de integridade e assinatura.
+- Mantém as opções de fundo inicial, tela de descanso e nitidez restauradas na versão 2.0.4.
+- Mantém o painel lateral dos Ajustes como superfície contínua de vidro azul.
+
+## Versão anterior: 2.0.4
 
 - Restaura as opções de fundo da **Tela inicial** e da **Tela de descanso**, além do ajuste de nitidez.
 - O painel lateral dos Ajustes agora é uma superfície contínua de vidro azul, com curvas e reflexos, e uma TV vetorial luminosa com as três estrelas.
@@ -93,3 +99,5 @@ Veja também os projetos independentes [Tempo LDZ](https://github.com/ludezam/te
 
 - [FreeMyProjector LDZ](https://github.com/ludezam/FreeMyProjector-LDZ) — home personalizada para projetores Android.
 - [Controle LDZ](https://github.com/ludezam/Controle-LDZ) — controle remoto local por Wi-Fi para Android TV e projetores Android.
+
+
