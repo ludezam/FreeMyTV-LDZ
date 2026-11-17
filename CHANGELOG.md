@@ -1,5 +1,9 @@
 # Histórico de versões
 
+## 2.0.5
+- Direciona o atualizador integrado para as releases do repositório renomeado `ludezam/TV-LDZ`.
+- Mantém as configurações de fundo restauradas e o painel lateral de vidro da versão 2.0.4.
+
 ## 2.0.4
 - Restaura as opções de fundo da Tela inicial, da Tela de descanso e de nitidez, ausentes na 2.0.3 por uma configuração de compilação incorreta.
 - Mantém o novo painel lateral de vidro dos Ajustes.
@@ -46,3 +50,4 @@
 - Remove Destaques e opções relacionadas, Widget tocando agora, Minhas fotos e o desenho decorativo de Wi‑Fi.
 - Mantém somente o relógio no topo da tela inicial.
 - Preserva as preferências antigas sem apagar as fotos guardadas no aparelho.
+
