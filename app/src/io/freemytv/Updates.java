@@ -43,9 +43,9 @@ import java.security.MessageDigest;
 final class Updates {
     private Updates() {}
 
-    private static final String LATEST = "https://api.github.com/repos/ludezam/FreeMyTV-LDZ/releases/latest";
+    private static final String LATEST = "https://api.github.com/repos/ludezam/TV-LDZ/releases/latest";
     // The only place the APK may come from: this repository's releases (github.com redirects to its download host).
-    private static final String RELEASES = "https://github.com/ludezam/FreeMyTV-LDZ/releases/download/";
+    private static final String RELEASES = "https://github.com/ludezam/TV-LDZ/releases/download/";
     // The LDZ distribution certificate: `apksigner verify --print-certs` SHA-256.
     private static final String RELEASE_CERT = "36a1f3a1af9cb3716ea08f87711a24937a345d95a219a856879175a4fa994a74";
     private static final String ASSET = "FreeMyTV-LDZ.apk";
@@ -484,3 +484,6 @@ final class Updates {
         return out.toString(StandardCharsets.UTF_8.name());
     }
 }
+
+
+
