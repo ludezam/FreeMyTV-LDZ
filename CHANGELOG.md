@@ -1,5 +1,13 @@
 # Histórico de versões
 
+## 2.1
+- Adiciona o perfil **TV LDZ Fast**, com superfícies translúcidas em estilo flat, menos sombras e menos efeitos de foco para reduzir o trabalho de renderização.
+- Mantém relógio, clima, fundo selecionado, tema e opção de nitidez/desfoque; trocar de perfil não apaga as preferências visuais do usuário.
+- Acrescenta métricas de primeiro quadro, duração média dos quadros, quadros acima do orçamento e memória para comparar os perfis.
+- Remove o cliente, as configurações e as dependências do TMDB sem alterar o relógio, o clima ou os fundos.
+- Corrige a proporção da TV vetorial na coluna lateral dos Ajustes para 16:9.
+
+
 ## 2.0.5
 - Direciona o atualizador integrado para as releases do repositório renomeado `ludezam/TV-LDZ`.
 - Mantém as configurações de fundo restauradas e o painel lateral de vidro da versão 2.0.4.
