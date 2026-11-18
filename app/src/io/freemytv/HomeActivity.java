@@ -8,7 +8,14 @@ import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.FrameMetrics;
+import android.view.Window;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.SystemClock;
 import android.widget.TextView;
+
+import java.util.ArrayDeque;
 
 /**
  * The Free My TV home screen (Android's "Home" role in Free My TV mode). It runs in the :home process: if it crashes,
@@ -20,6 +27,20 @@ public class HomeActivity extends Activity {
     static final String EXTRA_ALL_APPS = "io.freemytv.ALL_APPS";
     private HomeView home;
     private int prefsVersion = Prefs.version;   // settings changed while we were away: start over
+    private final Object frameLock = new Object();
+    private final ArrayDeque<Long> frameSamples = new ArrayDeque<>();
+    private long frameBudgetNanos = 16_666_667L;
+    private final long activityCreatedAt = SystemClock.elapsedRealtime();
+    private volatile long firstFrameMs = -1;
+    private final Window.OnFrameMetricsAvailableListener frameListener = (window, metrics, dropCount) -> {
+        if (firstFrameMs < 0) firstFrameMs = SystemClock.elapsedRealtime() - activityCreatedAt;
+        long duration = metrics.getMetric(FrameMetrics.TOTAL_DURATION);
+        if (duration <= 0) return;
+        synchronized (frameLock) {
+            if (frameSamples.size() == 600) frameSamples.removeFirst();
+            frameSamples.addLast(duration);
+        }
+    };
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +72,11 @@ public class HomeActivity extends Activity {
         // Android then keeps the app just left visible, and home tasks are layered under all others, so that app stays
         // on screen over ours. Opaque again on every resume (setTranslucent is public from Android 11).
         if (RemoteKeys.TCL && Build.VERSION.SDK_INT >= 30) setTranslucent(false);
+        if (Build.VERSION.SDK_INT >= 24) {
+            float refresh = getWindowManager().getDefaultDisplay().getRefreshRate();
+            if (refresh > 0) frameBudgetNanos = Math.round(1_000_000_000.0 / refresh * 1.5);
+            getWindow().addOnFrameMetricsAvailableListener(frameListener, new Handler(Looper.getMainLooper()));
+        }
         if (prefsVersion != Prefs.version) {
             prefsVersion = Prefs.version;
             HomeData.get(this).settingsChanged();
@@ -62,6 +88,15 @@ public class HomeActivity extends Activity {
     }
 
     @Override protected void onPause() {
+        if (Build.VERSION.SDK_INT >= 24) getWindow().removeOnFrameMetricsAvailableListener(frameListener);
+        long[] samples;
+        synchronized (frameLock) {
+            samples = new long[frameSamples.size()];
+            int i = 0;
+            for (Long sample : frameSamples) samples[i++] = sample;
+            frameSamples.clear();
+        }
+        HomeMode.recordFrameMetrics(this, Prefs.fastMode() ? "fast" : HomeMode.FREE, samples, frameBudgetNanos, firstFrameMs);
         if (home != null) home.pause();
         super.onPause();
     }
@@ -81,7 +116,6 @@ public class HomeActivity extends Activity {
 
     @Override public void onTrimMemory(int level) {
         super.onTrimMemory(level);
-        if (level >= TRIM_MEMORY_COMPLETE) Recs.get(this).trim();
     }
 
     @Override public boolean dispatchKeyEvent(KeyEvent event) {

@@ -8,7 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Shader;
 
 /**
- * The home screen background made from the recommendation's image, built once in the background:
+ * The home screen background made from the selected wallpaper, built once in the background:
  *  - the photo cropped to 16:9 at the TV's UI size (1920×1080; 1280×720 on TVs that draw their UI at 720p, like TCL's
  *    1 GB models, where every bitmap here is 2/3 as wide), with the dark scrims already applied (on the left,
  *    where the hero text sits; at the bottom, behind the shelf; a faint one at the top, behind the buttons); the left
@@ -96,6 +96,16 @@ final class Backdrop {
         }
         Canvas c = new Canvas(out);
         if (forLight) {
+            if (own && Prefs.fastMode()) {
+                // Fast still honors the sharp/blurred choice and day/night theme, but skips glass, frost and card copies.
+                int bw = blurred ? GW : W, bh = blurred ? GH : H;
+                int[] sharp = blurred ? reduce(out, bw, bh, 1, 1) : new int[bw * bh];
+                if (!blurred) out.getPixels(sharp, 0, bw, 0, 0, bw, bh);
+                int[] lightBg = Config.CUSTOM_SKIN ? sharp.clone() : ramp(sharp.clone(), bw, bh, 0.82f, 0.45f, true);
+                int[] nightBg = Config.CUSTOM_SKIN ? darken(sharp, 0.48f) : ramp(sharp, bw, bh, 0.76f, 0.5f, false);
+                out.recycle();
+                return new Backdrop(null, null, null, null, null, null, null, null, lightBg, nightBg, bw, bh);
+            }
             // Light design: everything comes from the photo without scrims.
             Bitmap wide = card(out, WIDE_W, WIDE_H);
             int[] frost = reduce(out, FW, FH, 3, 3);

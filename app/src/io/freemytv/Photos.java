@@ -30,7 +30,7 @@ import java.util.concurrent.Executors;
  * next time the home screen, the screensaver or the settings open, each one is imported once into the app's private
  * folder, turned upright (EXIF), cropped to 16:9 and re-encoded at the screensaver's size (which also drops its GPS and
  * other tags), and the original is deleted. While they are on (Home Settings > My Photos), the screensaver shows them
- * instead of the picks' photos, in the order they came, and without picks (no TMDB key) one of them is the home
+ * instead of the former cards' photos, in the order they came, and without cards one of them is the home
  * screen's background, a new one every hour.
  */
 final class Photos {

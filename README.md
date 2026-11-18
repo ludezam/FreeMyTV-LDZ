@@ -34,19 +34,24 @@ Em **Clima e horário**, a ilustração acompanha a condição do tempo e o per�
 
 ## Baixar
 
-- **Versão publicada atualmente: 2.1.** Baixe o APK nos [Releases](https://github.com/ludezam/TV-LDZ/releases/latest).
+- **Versão publicada atualmente: 2.1.1.** Baixe o APK nos [Releases](https://github.com/ludezam/TV-LDZ/releases/latest).
 - **Tempo LDZ:** [projeto, código e releases](https://github.com/ludezam/tempoLDZ), distribuído separadamente.
 - **Quadro LDZ:** [projeto, instruções e releases](https://github.com/ludezam/Quadro-LDZ), distribuído separadamente.
 
 O lançamento atual de TV LDZ contém apenas este aplicativo. Tempo LDZ e Quadro LDZ não estão incluídos no APK nem no pacote da release.
 
-## Versão publicada: 2.1
+## Versão publicada: 2.1.1
 
-- Adiciona o perfil **TV LDZ Fast**, com transparências mais simples, menos sombras e menos efeitos visuais para reduzir o trabalho de renderização.
-- Preserva as escolhas de fundo, clima, tema e nitidez/desfoque ao alternar entre perfis, mantendo o relógio fixo na home.
+- Corrige o crash ao iniciar o perfil **TV LDZ Fast**: essa opção já não tenta ler buffers de vidro ausentes.
+- Mantém a nitidez/desfoque e as demais preferências escolhidas pelo usuário.
+
+## Versão anterior: 2.1
+
+- Adiciona o perfil **TV LDZ Fast**, com transparências mais simples e menos efeitos visuais para reduzir o trabalho de renderização.
+- Preserva as escolhas de fundo, clima, tema e nitidez/desfoque ao alternar entre os perfis.
 - Mostra métricas de renderização e memória para comparar os perfis conforme são usados.
 - Remove as dependências e configurações do TMDB; relógio, clima e fundo escolhido continuam disponíveis.
-- Ajusta a TV vetorial do painel dos Ajustes para proporção 16:9.
+- Ajusta a TV vetorial no painel dos Ajustes para proporção 16:9.
 
 ## Versão anterior: 2.0.5
 
@@ -107,5 +112,4 @@ Veja também os projetos independentes [Tempo LDZ](https://github.com/ludezam/te
 
 - [FreeMyProjector LDZ](https://github.com/ludezam/FreeMyProjector-LDZ) — home personalizada para projetores Android.
 - [Controle LDZ](https://github.com/ludezam/Controle-LDZ) — controle remoto local por Wi-Fi para Android TV e projetores Android.
-
 

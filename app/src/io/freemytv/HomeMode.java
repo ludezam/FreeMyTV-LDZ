@@ -1045,7 +1045,9 @@ final class HomeMode {
     /** Two minutes after a switch (the home screen settled, caches trimmed). */
     static void measureMemoryNow(Context c, String mode) {
         synchronized (RUN) {
-            if (!mode.equals(state(c).optString("mode"))) return;
+            JSONObject current = state(c);
+            boolean fast = "fast".equals(mode) && FREE.equals(current.optString("mode")) && Prefs.fastMode();
+            if (!fast && !mode.equals(current.optString("mode"))) return;
             try (Adb adb = Adb.connect(c, 10_000, null)) {
                 measureMemory(c, adb, mode);
             } catch (Exception e) {
@@ -1059,7 +1061,7 @@ final class HomeMode {
         if (avail.find()) putMetric(c, mode, "memAvailableMB", Long.parseLong(avail.group(1)) / 1024);
         long pss = 0;
         String home = packageOf(originalHome(state(c)));
-        String[] processes = FREE.equals(mode) ? new String[] {PKG + ":home"}
+        String[] processes = (FREE.equals(mode) || "fast".equals(mode)) ? new String[] {PKG + ":home"}
                 : home == null ? new String[0] : new String[] {home, home + ":coreservices"};
         Pattern total = Pattern.compile("TOTAL PSS:\\s+(\\d+)");
         for (String p : processes) {
@@ -1088,6 +1090,23 @@ final class HomeMode {
         metrics.put(mode, m);
         s.put("metrics", metrics);
         save(c, s);
+    }
+
+    /** Persist a bounded sample from Android's actual rendered frame timings for the comparison screen. */
+    static void recordFrameMetrics(Context c, String mode, long[] frameDurations, long frameBudgetNanos, long firstFrameMs) {
+        if (frameDurations == null || frameDurations.length < 30 || frameBudgetNanos <= 0) return;
+        long total = 0, over = 0;
+        for (long duration : frameDurations) {
+            total += duration;
+            if (duration > frameBudgetNanos) over++;
+        }
+        try {
+            putMetric(c, mode, "avgFrameMs", Math.round(total / (double) frameDurations.length / 1_000_000.0));
+            putMetric(c, mode, "jankPct", Math.round(over * 1000.0 / frameDurations.length) / 10L);
+            if (firstFrameMs > 0) putMetric(c, mode, "launchMs", firstFrameMs);
+        } catch (Exception e) {
+            AppLog.w("frame measurement failed: " + e.getMessage());
+        }
     }
 
     private static JSONObject metrics(JSONObject s, String mode) {

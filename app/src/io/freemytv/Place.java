@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 /**
  * Where the TV is when config.properties doesn't say (built with --generic, like the APK on GitHub's releases): the
  * TV's time zone gives the weather's city and position (assets/zones.json, the same table as LG and Samsung's
- * web/zones.js), and its country the currency and the TMDB region. A city picked in Home Settings wins over this, and
+ * web/zones.js), and its country the currency. A city picked in Home Settings wins over this, and
  * config.properties over both. A zone the table doesn't know leaves New York's position without a name, as on LG.
  */
 final class Place {
@@ -87,11 +87,4 @@ final class Place {
         return country.equals("BR") ? "BRL" : EURO.matcher(country).matches() ? "EUR" : "USD";
     }
 
-    /** The picks' streaming region. */
-    static String region() {
-        String v = Config.TMDB_REGION.trim().toUpperCase(Locale.ROOT);
-        if (!v.isEmpty()) return v;
-        load();
-        return country.toUpperCase(Locale.ROOT);
-    }
 }

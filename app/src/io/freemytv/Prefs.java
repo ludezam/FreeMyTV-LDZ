@@ -73,7 +73,7 @@ final class Prefs {
 
     static void init(Context c) {
         app = c.getApplicationContext();
-        // TMDB-powered picks were removed from this build; discard any key saved by an older version.
+        // Remove retired recommendation data from versions that stored it locally.
         if (sp().contains("tmdbKey")) sp().edit().remove("tmdbKey").apply();
         SharedPreferences oldPicks = app.getSharedPreferences("recs", Context.MODE_PRIVATE);
         if (!oldPicks.getAll().isEmpty()) oldPicks.edit().clear().apply();
@@ -168,10 +168,6 @@ final class Prefs {
             String saved = sp().getString("servicesOff", null);
             if (saved == null) {   // not chosen on the TV yet: what hide_services says
                 StringBuilder first = new StringBuilder();
-                for (String key : Config.HIDE_SERVICES.split(",")) {
-                    key = key.trim().toLowerCase(Locale.ROOT);
-                    if (!key.isEmpty()) first.append(first.length() > 0 ? "," : "").append(key);
-                }
                 saved = first.toString();
             }
             offList = saved.isEmpty() ? "," : "," + saved + ",";
@@ -198,6 +194,10 @@ final class Prefs {
 
     static void setTheme(String v) { put("theme", v); }
 
+    /** Lightweight renderer profile; it does not change the user's home content or preferences. */
+    static boolean fastMode() { return sp().getBoolean("fastMode", false); }
+    static void setFastMode(boolean on) { put("fastMode", on); }
+
     // MARK: - City
 
     static String city() { return sp().getString("city", Place.city()).trim(); }
@@ -223,7 +223,7 @@ final class Prefs {
     static final String TOP_PICKS = "picks", TOP_CONTINUE = "continue", TOP_NONE = "none";
     static final String[] TOP_CONTENT = {TOP_PICKS, TOP_CONTINUE, TOP_NONE};
 
-    /** What the cards under the title show: the recommendations (TMDB), what you were watching in your apps, or nothing. */
+    /** Legacy header mode; the TV LDZ home now always keeps its clock, date and weather. */
     /** The personalized home screen always shows its clock above the shelf. */
     static String topContent() { return TOP_NONE; }
 
@@ -289,19 +289,6 @@ final class Prefs {
 
     static boolean coin(int i) { return sp().getBoolean("coin" + i, true); }
     static void setCoin(int i, boolean on) { put("coin" + i, on); }
-
-    // MARK: - TMDB key
-
-    /**
-     * The TMDB key given on the TV (Home Settings > TMDB key: from a phone, or typed), or "": then config.properties'
-     * one (Recs.key). Never logged.
-     */
-    static String tmdbKey() { return app == null ? "" : sp().getString("tmdbKey", "").trim(); }
-
-    static void setTmdbKey(String key) {   // committed: ScreensaverAlone reads it from the main process
-        sp().edit().putString("tmdbKey", key).commit();
-        version++;
-    }
 
     // MARK: - Shelf
 

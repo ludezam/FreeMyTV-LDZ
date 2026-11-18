@@ -235,6 +235,10 @@ final class Scene {
     void liquid(Canvas c, RectF r, float radius, int tint, float tintAlpha, float lift, float band, float refraction,
                 float specular, float alpha) {
         if (alpha <= 0.004f) return;
+        if (Prefs.fastMode()) {
+            glass(c, r, radius, tint, tintAlpha, 0, 0, lift, 1, alpha);
+            return;
+        }
         if (liquid == null) {
             if (imageGlass && softShaderA != null) {
                 // Mapped by what the copy covers: 270 / 8 = 33.75 rows, of which the bitmap holds 33.
@@ -260,6 +264,12 @@ final class Scene {
 
     /** The glass now reads the blurred background image (Backdrop.FW × FH, ARGB). */
     void setFrost(int[] pixels) {
+        // Fast deliberately omits the per-wallpaper frost buffers. Keep the existing flat glass path and
+        // never try to build or upload a frost texture in this profile (some transitions still call here).
+        if (Prefs.fastMode() || pixels == null || pixels.length < Backdrop.FW * Backdrop.FH) {
+            clearFrost();
+            return;
+        }
         imageFrost = true;
         if (glass == null) {            // as above: a small soft copy for the bitmaps path (also mid-fade, every step)
             if (softPxFrost == null) softPxFrost = new int[SFW * SFH];
@@ -339,6 +349,16 @@ final class Scene {
     /** Same, with an opacity (0 to 1) for the whole glass. */
     void glass(Canvas c, RectF r, float radius, int tint, float tintAlpha, int glow, float glowAlpha, float lift, float body, float alpha) {
         if (alpha <= 0.004f) return;
+        if (Prefs.fastMode()) {
+            if (body > 0) {
+                flatFill.setColor(Ui.alpha(tint | 0xFF000000, Math.max(0.22f, Math.min(0.72f, tintAlpha))));
+                c.drawRoundRect(r, radius, radius, flatFill);
+            }
+            flatRim.setColor(0x557EBAF2);
+            flatRim.setStrokeWidth(Math.max(1f, 1.2f * android.content.res.Resources.getSystem().getDisplayMetrics().density));
+            c.drawRoundRect(r, radius, radius, flatRim);
+            return;
+        }
         if (glass == null) {
             if (imageFrost && softShaderFrost != null) {
                 bitmapGlass(c, r, radius, softShaderFrost, Backdrop.FW / (float) SOFT_FROST, Backdrop.FH / (float) SOFT_FROST, null, 0,

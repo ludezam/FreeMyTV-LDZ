@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Builds FreeMyTV-LDZ.apk without Gradle: aapt2 -> javac -> d8 -> zipalign -> apksigner.
 # Needs a JDK (17+) and the Android SDK command-line tools (build-tools 34+, platform android-34). See README.md.
-#   ./build.sh             with config.properties (your city, your TMDB key)
+#   ./build.sh             with config.properties (your city)
 #   ./build.sh --generic   without it, as the APK on GitHub's releases: no key, and the TV's time zone gives the city
 #   ./build.sh --generic --custom   personal clock and dock layout, with background service selection
 set -euo pipefail
@@ -35,7 +35,7 @@ if $GENERIC; then
   CONFIG=/dev/null   # every value at its default; the place comes from the TV's time zone (Place)
 elif [ ! -f config.properties ]; then
   cp config.example.properties config.properties
-  echo "Created config.properties: add your TMDB key and your city there (optional), then build again."
+  echo "Created config.properties: add your city there (optional), then build again."
 fi
 # Notepad's "Unicode" is UTF-16: grep would find no keys in it and build every default without a word.
 # Generic builds use /dev/null, so they do not need the byte-order-mark check (and can build without `od`).
@@ -56,16 +56,14 @@ number() {
   printf '%s' "$v"
 }
 if $GENERIC; then
-  LAT=""; LON=""; REGION=""; CURRENCY=""
+  LAT=""; LON=""; CURRENCY=""
 else
   LAT="$(number latitude 40.7128)"
   LON="$(number longitude -74.0060)"
-  REGION="$(prop tmdb_region US)"
   CURRENCY="$(prop currency USD)"
 fi
 ASSIST=false; [ "$(prop disable_assistant false)" = "true" ] && ASSIST=true
 CRYPTO=false; [ "$(prop show_crypto true)" = "true" ] && CRYPTO=true
-ANIMATION=false; [ "$(prop hide_animation false)" = "true" ] && ANIMATION=true
 SAVER=true; [ "$(prop screensaver true)" = "false" ] && SAVER=false
 
 rm -rf out && mkdir -p out/gen/io/freemytv out/classes out/assets
@@ -82,22 +80,15 @@ package io.freemytv;
 final class Config {
     private Config() {}
 
-    static final String TMDB_KEY = "$(prop tmdb_key '')";
-    static final String WATCHMODE_KEY = "$(prop watchmode_key '')";
-    static final String PLEX_URL = "$(prop plex_url '')";
-    static final String PLEX_TOKEN = "$(prop plex_token '')";
-    static final String TMDB_REGION = "$REGION";
     static final String LATITUDE = "$LAT";
     static final String LONGITUDE = "$LON";
     static final String CITY = "$(prop city '')";
     static final String LANGUAGE = "$(prop language auto)";
     static final String CURRENCY = "$CURRENCY";
     static final String TEMPERATURE = "$(prop temperature auto)";
-    static final String HIDE_SERVICES = "$(prop hide_services '')";
     static final String THEME = "$(prop theme auto)";
     static final boolean DISABLE_ASSISTANT = $ASSIST;
     static final boolean SHOW_CRYPTO = $CRYPTO;
-    static final boolean HIDE_ANIMATION = $ANIMATION;
     static final boolean SCREENSAVER = $SAVER;   // false: the TV keeps its own
     static final boolean GENERIC = $GENERIC;   // built with --generic, as the APK on GitHub's releases (Updates)
     static final boolean CUSTOM_SKIN = $CUSTOM_SKIN; // personal landscape home screen, built with --custom

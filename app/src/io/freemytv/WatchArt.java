@@ -28,8 +28,8 @@ import java.util.concurrent.Executors;
 /**
  * The "Continue watching" cards' pictures, decoded in the background once, at the card's size on screen (16:9,
  * centre-cropped), and kept in memory. Drawing only reuses them. Only pictures already on the TV are read (content:// and
- * android.resource://, from the apps themselves): the app never downloads an address another app wrote (http, https),
- * since it only talks to TMDB, Open-Meteo and Binance, and never opens files (file://). Anything else, or a picture that
+ * android.resource://, from the apps themselves): the app never downloads an address another app wrote (http, https)
+ * and never opens arbitrary files (file://). Anything else, or a picture that
  * can't be read, shows the app's TV banner instead, and isn't tried again for a while.
  */
 final class WatchArt {

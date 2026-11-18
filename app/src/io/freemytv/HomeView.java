@@ -60,9 +60,7 @@ import java.util.function.Consumer;
  *  - at the top left, the "For You" title and the tabs (Explore, Movies, Shows); at the top right, icon-only glass
  *    buttons (Live TV, HDMI Inputs, Settings), with the focused one's name below it, and the small crypto quotes
  *    (logo + price) at the right end of the tab row;
- *  - three cards with the titles recommended for right now in the selected tab (Recs, from TMDB); the background is
- *    the first card's photo, heavily blurred and almost white (Backdrop); without picks, one of your own photos
- *    (Photos) the same way, or else a light gradient;
+ *  - the fixed clock, date and weather header over the selected, bundled wallpaper;
  *  - at the bottom, the glass shelf with the apps (icons in each brand's color, like the tvOS Dock; the focused one
  *    grows);
  *  - ↓ on the shelf: everything moves up and the bottom drawer appears (inputs, shortcuts, weather for the next hours or days
@@ -1465,10 +1463,12 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     private void drawPlatter(Canvas c) {
         if (shelf.isEmpty()) return;
         float radius = (TILE_RADIUS + SHELF_PAD) * k;
-        tmp.set(platterRect);
-        tmp.offset(0, 18 * k);
-        shadow.setColor(tone(0x1F000000, 0x52000000));
-        shadows.draw(c, tmp, radius, SHADOW_BLUR * k, shadow);
+        if (!Prefs.fastMode()) {
+            tmp.set(platterRect);
+            tmp.offset(0, 18 * k);
+            shadow.setColor(tone(0x1F000000, 0x52000000));
+            shadows.draw(c, tmp, radius, SHADOW_BLUR * k, shadow);
+        }
         // White glass by day; smoked glass at night.
         scene.liquid(c, platterRect, radius, tone(glassLight(), SMOKE), tone(Config.CUSTOM_SKIN ? 0.32f : 0.42f, 0.12f), tone(0.03f, 0.08f),
                 tone(30, 34) * k, tone(22, 28) * k, tone(0.65f, 0.95f), Config.CUSTOM_SKIN && night < 0.5f ? 0.86f : 1);
@@ -1689,7 +1689,8 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         HomeApps.Item it = shelf.get(i);
         // Lifted to be moved: a little bigger than focused, with a deeper shadow.
         float l = i == liftIndex ? Math.max(0, moveLift.value) : 0;
-        float f = tileFocus[i].value, fc = Ui.clamp(f), s = 1 + FOCUS_GROW * f + LIFT_GROW * l;
+        boolean fast = Prefs.fastMode();
+        float f = tileFocus[i].value, fc = Ui.clamp(f), s = 1 + (fast ? 0.08f : FOCUS_GROW) * f + (fast ? 0 : LIFT_GROW) * l;
         RectF base = tileRects[i];
         float bw = base.width(), bh = base.height(), r0 = TILE_RADIUS * k;
         float cx = base.centerX(), cy = base.centerY();
@@ -1697,19 +1698,21 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
         float r = r0 * s;
         // Shadow at the resting icon size, enlarged by the transform (so the blur stays cached): short at rest, deep
         // and lower when focused.
-        c.save();
-        c.translate(cx, cy);
-        c.scale(s, s);
-        tmp.set(-bw / 2, -bh / 2, bw / 2, bh / 2);
-        tmp.offset(0, (4 + 14 * f + 6 * l) * k);
-        shadowDeep.setColor(Ui.alpha(0xFF000000, tone(0.14f, 0.3f) + tone(0.18f, 0.3f) * fc + 0.14f * Ui.clamp(l)));
-        shadows.draw(c, tmp, r0, DEEP_BLUR * k, shadowDeep);
-        c.restore();
+        if (!fast) {
+            c.save();
+            c.translate(cx, cy);
+            c.scale(s, s);
+            tmp.set(-bw / 2, -bh / 2, bw / 2, bh / 2);
+            tmp.offset(0, (4 + 14 * f + 6 * l) * k);
+            shadowDeep.setColor(Ui.alpha(0xFF000000, tone(0.14f, 0.3f) + tone(0.18f, 0.3f) * fc + 0.14f * Ui.clamp(l)));
+            shadows.draw(c, tmp, r0, DEEP_BLUR * k, shadowDeep);
+            c.restore();
+        }
         int[] style = TILE_STYLE.get(it.key);
         if (Config.CUSTOM_SKIN) {
             // The personalized dock uses the wallpaper as a frosted glass surface. Focus adds a luminous rim and
             // brighter glass so selection remains clear from a distance on the TV.
-            if (fc > 0.01f) {
+            if (fc > 0.01f && !fast) {
                 shadow.setColor(Ui.alpha(0xFF75B4FF, 0.08f + 0.12f * fc));
                 shadows.draw(c, cell, r, 16 * k, shadow);
             }
@@ -1934,7 +1937,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
             tmp.set(r);
             tmp.offset(0, drop);
             shadow.setColor(Ui.alpha(shadowColor, 1 - dk));
-            shadows.draw(c, tmp, radius, SHADOW_BLUR * k, shadow);
+            if (!Prefs.fastMode()) shadows.draw(c, tmp, radius, SHADOW_BLUR * k, shadow);
             scene.glass(c, r, radius, glassLight(), lightTint, 0, 0, 0.02f, 1,
                     (Config.CUSTOM_SKIN ? 0.86f : 1f) * (1 - dk));
         }
@@ -3394,7 +3397,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
             List<Recs.Pick> other = recs.now(TAB_KIND[t]);
             for (int i = 0; i < Math.min(3, other.size()); i++) recs.backdrop(other.get(i));
         }
-        // Picks bring their own background; without them (no TMDB key), your photo if there is one.
+        // Legacy cards are empty in TV LDZ; keep the selected local wallpaper as the clock's background.
         boolean own = !picksOn() && Photos.on(getContext());
         Backdrop b = own ? Photos.backdrop(getContext(), ownReady) : cards.isEmpty() ? null : recs.backdrop(cards.get(0));
         if (b != null || (cards.isEmpty() && !own)) showBackdrop(b);
@@ -3443,12 +3446,12 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
 
     // MARK: - Continue watching (Settings > Top of the screen)
 
-    /** Picks need a TMDB key: without one, "picks" shows the clock, like "nothing". */
+    /** The recommendation cards are retired; the personalized home always shows its fixed clock header. */
     private boolean picksMode() {
         return topMode.equals(Prefs.TOP_PICKS) && picksOn();
     }
 
-    /** The clock, the date and the weather: nothing at the top, or picks without a TMDB key. */
+    /** The clock, date and weather shown on the personalized home. */
     private boolean clockMode() {
         return !picksMode() && !continueMode();
     }
@@ -4089,7 +4092,7 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
     }
 
     private boolean picksOn() {
-        return Recs.hasKey(getContext());
+        return false;
     }
 
     private void drawClock(Canvas c) {
@@ -4205,12 +4208,14 @@ final class HomeView extends ViewGroup implements Choreographer.FrameCallback, H
             HomeApps.Item it = lightButtons.get(i);
             boolean wifi = HomeApps.TOP_WIFI.equals(it.key);
             RectF r = topRects[3 + i];
-            float f = Ui.clamp(topFocus[3 + i].value), s = 1 + 0.1f * f, rad = r.width() / 2 * s;
+            float f = Ui.clamp(topFocus[3 + i].value), s = 1 + (Prefs.fastMode() ? 0.04f : 0.1f) * f, rad = r.width() / 2 * s;
             cell.set(r.centerX() - rad, r.centerY() - rad, r.centerX() + rad, r.centerY() + rad);
-            tmp.set(cell);
-            tmp.offset(0, (6 + 8 * f) * k);
-            shadow.setColor(Ui.alpha(0xFF000000, tone(0.1f, 0.3f) + tone(0.14f, 0.2f) * f));
-            shadows.draw(c, tmp, rad, SHADOW_BLUR * k, shadow);
+            if (!Prefs.fastMode()) {
+                tmp.set(cell);
+                tmp.offset(0, (6 + 8 * f) * k);
+                shadow.setColor(Ui.alpha(0xFF000000, tone(0.1f, 0.3f) + tone(0.14f, 0.2f) * f));
+                shadows.draw(c, tmp, rad, SHADOW_BLUR * k, shadow);
+            }
             scene.liquid(c, cell, rad, Config.CUSTOM_SKIN ? 0x66304466 : tone(glassLight(), SMOKE), tone(0.55f, 0.5f), tone(0.02f, 0.01f), 12 * k, 8 * k,
                     tone(0.6f, 0.45f), 1 - f);
             if (f > 0.01f) {
