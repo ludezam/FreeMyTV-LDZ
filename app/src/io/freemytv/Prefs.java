@@ -257,7 +257,7 @@ final class Prefs {
 
     /** Your photos (Photos, sent from a computer) on the screensaver and behind the home screen, once imported. */
     /** Personal photos were removed from the LDZ build; existing files remain untouched. */
-    static boolean photos() { return false; }
+    static boolean photos() { return sp().getBoolean("photos", false); }
     static void setPhotos(boolean on) { put("photos", on); }
 
     /** The custom home background: a local landscape or weather illustrations. */

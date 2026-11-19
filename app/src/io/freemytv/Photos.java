@@ -47,6 +47,12 @@ final class Photos {
         return new File(c.getFilesDir(), "photos");
     }
 
+    /** Removes imported personal photos and invalidates the in-memory listing cache. */
+    static synchronized void clear(Context c) {
+        File[] all = dir(c).listFiles();
+        if (all != null) for (File f : all) if (f.isFile()) f.delete();
+        listed.clear(); listedStamp = -1; backdrop = null; built = null;
+    }
     /** Where tools/photos.py puts them (the app's own external folder: adb can write there, and no permission). */
     private static File inbox(Context c) {
         return c.getExternalFilesDir("photos");

@@ -38,7 +38,12 @@ public class PhotoInbox extends ContentProvider {
 
     @Override public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
         int caller = Binder.getCallingUid();
-        if (caller != SHELL_UID && caller != 0) throw new SecurityException("only adb sends photos");
+        boolean control = false;
+        if (caller != SHELL_UID && caller != 0) {
+            String[] packages = getContext().getPackageManager().getPackagesForUid(caller);
+            if (packages != null) for (String pkg : packages) if ("br.com.ldz.controle".equals(pkg)) control = true;
+        }
+        if (caller != SHELL_UID && caller != 0 && !control) throw new SecurityException("only adb or Control LDZ may send photos");
         String name = uri.getLastPathSegment();
         if (name == null || name.isEmpty() || name.contains("/") || name.startsWith(".") || !mode.contains("w")) {
             throw new FileNotFoundException("photos only: content://io.freemytv.photos/<name>");
