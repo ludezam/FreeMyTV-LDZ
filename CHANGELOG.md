@@ -1,8 +1,8 @@
-# Histórico de versões
+## 2.2.0
 
-## 2.1.1
-- Corrige o crash do perfil TV LDZ Fast ao concluir transições de fundo sem buffers de vidro.
-- Mantém a preferência de nitidez/desfoque definida pelo usuário.
+- Added restricted Control LDZ integration for TV wallpaper, blur, screensaver background, and personal photo import.
+
+# Histórico de versões
 
 ## 2.1
 - Adiciona o perfil **TV LDZ Fast**, mantendo as preferências de clima, fundo, tema e nitidez/desfoque; simplifica transparências, sombras e animações da home.
