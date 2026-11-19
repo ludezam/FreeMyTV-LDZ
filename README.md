@@ -34,17 +34,20 @@ Em **Clima e horário**, a ilustração acompanha a condição do tempo e o per�
 
 ## Baixar
 
-- **Versão publicada atualmente: 2.1.1.** Baixe o APK nos [Releases](https://github.com/ludezam/TV-LDZ/releases/latest).
+- **Versão publicada atualmente: 2.2.0.** Baixe o APK nos [Releases](https://github.com/ludezam/TV-LDZ/releases/latest).
 - **Tempo LDZ:** [projeto, código e releases](https://github.com/ludezam/tempoLDZ), distribuído separadamente.
 - **Quadro LDZ:** [projeto, instruções e releases](https://github.com/ludezam/Quadro-LDZ), distribuído separadamente.
 
 O lançamento atual de TV LDZ contém apenas este aplicativo. Tempo LDZ e Quadro LDZ não estão incluídos no APK nem no pacote da release.
 
-## Versão publicada: 2.1.1
+## Versão publicada: 2.2.0
 
-- Corrige o crash ao iniciar o perfil **TV LDZ Fast**: essa opção já não tenta ler buffers de vidro ausentes.
-- Mantém a nitidez/desfoque e as demais preferências escolhidas pelo usuário.
+- Adiciona a ponte de configurações para o Controle LDZ, validando o pacote chamador e limitando as ações às opções de personalização.
+- O Controle LDZ pode ajustar papel de parede, desfoque, protetor de tela e fotos pela rede local.
 
+## Integração com Controle LDZ
+
+A página **Personalizar** do [Controle LDZ 1.5.0](https://github.com/ludezam/Controle-LDZ/releases/tag/v1.5.0) controla essas opções após o pareamento do celular. Instale também o [TV LDZ 2.2.0](https://github.com/ludezam/TV-LDZ/releases/tag/v2.2.0) na TV.
 ## Versão anterior: 2.1
 
 - Adiciona o perfil **TV LDZ Fast**, com transparências mais simples e menos efeitos visuais para reduzir o trabalho de renderização.
@@ -113,10 +116,3 @@ Veja também os projetos independentes [Tempo LDZ](https://github.com/ludezam/te
 - [FreeMyProjector LDZ](https://github.com/ludezam/FreeMyProjector-LDZ) — home personalizada para projetores Android.
 - [Controle LDZ](https://github.com/ludezam/Controle-LDZ) — controle remoto local por Wi-Fi para Android TV e projetores Android.
 
-
-
-## Integração com Controle LDZ
-
-A partir do código TV LDZ 2.2.0, o [Controle LDZ](https://github.com/ludezam/Controle-LDZ) pode abrir a opção **Personalizar** na interface do celular. Ela envia pela rede local escolhas de fundo, desfoque, proteção de tela e fotos para o TV LDZ. A ponte da TV aceita somente essas opções e chamadas do pacote Controle LDZ; o pareamento e o controle remoto continuam no app separado.
-
-O código dessa integração está publicado neste repositório. Para usar, instale versões compatíveis dos dois apps; confira as [Releases do TV LDZ](https://github.com/ludezam/TV-LDZ/releases) e do [Controle LDZ](https://github.com/ludezam/Controle-LDZ/releases) para a disponibilidade dos APKs.
