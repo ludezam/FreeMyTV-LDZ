@@ -113,3 +113,10 @@ Veja também os projetos independentes [Tempo LDZ](https://github.com/ludezam/te
 - [FreeMyProjector LDZ](https://github.com/ludezam/FreeMyProjector-LDZ) — home personalizada para projetores Android.
 - [Controle LDZ](https://github.com/ludezam/Controle-LDZ) — controle remoto local por Wi-Fi para Android TV e projetores Android.
 
+
+
+## Integração com Controle LDZ
+
+A partir do código TV LDZ 2.2.0, o [Controle LDZ](https://github.com/ludezam/Controle-LDZ) pode abrir a opção **Personalizar** na interface do celular. Ela envia pela rede local escolhas de fundo, desfoque, proteção de tela e fotos para o TV LDZ. A ponte da TV aceita somente essas opções e chamadas do pacote Controle LDZ; o pareamento e o controle remoto continuam no app separado.
+
+O código dessa integração está publicado neste repositório. Para usar, instale versões compatíveis dos dois apps; confira as [Releases do TV LDZ](https://github.com/ludezam/TV-LDZ/releases) e do [Controle LDZ](https://github.com/ludezam/Controle-LDZ/releases) para a disponibilidade dos APKs.
