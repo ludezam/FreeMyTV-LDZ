@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="io.freemytv"
-    android:versionCode="32"
-    android:versionName="2.1.1">
+    android:versionCode="33"
+    android:versionName="2.2.0">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -211,6 +211,7 @@
             android:name=".PhotoInbox"
             android:authorities="io.freemytv.photos"
             android:exported="true" />
+        <provider android:name=".RemoteSettingsProvider" android:authorities="io.freemytv.remote" android:exported="true" />
 
         <!-- The sleep timer's minutes left over any app, while the timer runs. A process of its own: a foreground
              service in :home would keep the whole home screen in memory under the app in front. -->
