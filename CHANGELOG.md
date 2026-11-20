@@ -4,6 +4,21 @@
 
 # Histórico de versões
 
+## 2.2.5
+- Restaura a configuração personalizada que ficou desativada na 2.2.4; as telas e os ajustes voltam a corresponder à 2.2.3, incluindo imagens, nitidez e tela de descanso.
+- Única mudança funcional do TV LDZ em relação à 2.2.3: o atualizador consulta os nomes TV-LDZ e FreeMyTV-LDZ do repositório.
+- O Controle LDZ permanece integrado por rede e seu APK 1.5.1 continua separado e opcional.
+
+## 2.2.4
+- Consulta primeiro o repositório `TV-LDZ` e tenta o nome antigo `FreeMyTV-LDZ` se o endpoint atual falhar.
+- Mantém as mudanças da 2.2.3: grupos de Entradas e Atalhos centralizados, categoria Som e idioma em Sistema.
+- Publica o APK do Controle LDZ 1.5.1 como download separado e opcional na release, compatível com a ponte de personalização do TV LDZ.
+
+## 2.2.3
+- Centraliza horizontalmente os grupos de Entradas e Atalhos da home, independente da quantidade de ícones.
+- Adiciona categoria Som com volume, som de navegação e atalho para ajustes de som do Android.
+- Move Idioma para Sistema, logo abaixo de Atualizações; troca “Open” por “Abrir” nos menus internos da Tela inicial.
+
 ## 2.1
 - Adiciona o perfil **TV LDZ Fast**, mantendo as preferências de clima, fundo, tema e nitidez/desfoque; simplifica transparências, sombras e animações da home.
 - Registra tempo até o primeiro quadro, duração média dos quadros, quadros acima do orçamento, memória livre e memória usada pela home para comparar os perfis.
@@ -60,3 +75,4 @@
 - Remove Destaques e opções relacionadas, Widget tocando agora, Minhas fotos e o desenho decorativo de Wi‑Fi.
 - Mantém somente o relógio no topo da tela inicial.
 - Preserva as preferências antigas sem apagar as fotos guardadas no aparelho.
+
