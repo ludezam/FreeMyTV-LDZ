@@ -6,7 +6,7 @@
 
 ## Capturas de tela
 
-Capturas reais da versão 2.0.2 em uma TV TCL com Android TV. A versão 2.0.5 mantém o novo painel lateral dos Ajustes e restaura as opções de fundo. Use as setas do controle para navegar pelas categorias do menu.
+Capturas reais da versão 2.0.2 em uma TV TCL com Android TV. A 2.2.5 mantém a tela e os ajustes da 2.2.3, com o atualizador compatível com os nomes novo e antigo do repositório. Use as setas do controle para navegar pelas categorias do menu.
 
 <table>
   <tr>
@@ -34,20 +34,33 @@ Em **Clima e horário**, a ilustração acompanha a condição do tempo e o per�
 
 ## Baixar
 
-- **Versão publicada atualmente: 2.2.0.** Baixe o APK nos [Releases](https://github.com/ludezam/TV-LDZ/releases/latest).
+- **Versão publicada atualmente: 2.2.5.** Baixe o APK nos [Releases](https://github.com/ludezam/TV-LDZ/releases/latest). O Controle LDZ 1.5.1 também está anexado à release como APK separado e opcional.
 - **Tempo LDZ:** [projeto, código e releases](https://github.com/ludezam/tempoLDZ), distribuído separadamente.
 - **Quadro LDZ:** [projeto, instruções e releases](https://github.com/ludezam/Quadro-LDZ), distribuído separadamente.
 
-O lançamento atual de TV LDZ contém apenas este aplicativo. Tempo LDZ e Quadro LDZ não estão incluídos no APK nem no pacote da release.
+O APK do TV LDZ contém apenas o launcher. Tempo LDZ e Quadro LDZ continuam distribuídos separadamente; o Controle LDZ também é um aplicativo independente e aparece como anexo opcional na release.
 
-## Versão publicada: 2.2.0
+O **Controle LDZ** continua sendo um aplicativo separado: instale-o na TV para abrir a página de controle pelo celular. A ponte de personalização permite ajustar fundo, desfoque, tela de descanso e fotos pela rede local. O APK compatível está disponível como anexo separado na mesma release.
 
-- Adiciona a ponte de configurações para o Controle LDZ, validando o pacote chamador e limitando as ações às opções de personalização.
-- O Controle LDZ pode ajustar papel de parede, desfoque, protetor de tela e fotos pela rede local.
+## Versão publicada: 2.2.5
 
-## Integração com Controle LDZ
+- Mantém as telas e os ajustes da versão 2.2.3, incluindo fundo da home, nitidez, tela de descanso e integração com o Controle LDZ.
+- Em relação à 2.2.3, a única mudança funcional no TV LDZ é o atualizador: consulta `TV-LDZ` e também aceita `FreeMyTV-LDZ`, o nome anterior do repositório.
+- O Controle LDZ 1.5.1 fica disponível como APK separado e opcional; ele não está embutido no TV LDZ.
 
-A página **Personalizar** do [Controle LDZ 1.5.0](https://github.com/ludezam/Controle-LDZ/releases/tag/v1.5.0) controla essas opções após o pareamento do celular. Instale também o [TV LDZ 2.2.0](https://github.com/ludezam/TV-LDZ/releases/tag/v2.2.0) na TV.
+## Versão anterior: 2.2.4
+
+- O atualizador consulta primeiro o repositório `TV-LDZ` e usa o nome anterior `FreeMyTV-LDZ` como alternativa durante a transição.
+- Inclui a categoria **Som**, com ajuste do volume, som de navegação e atalho para as configurações de som do Android.
+- Centraliza os grupos de **Entradas** e **Atalhos** na home, independentemente do número de ícones.
+- Move **Idioma** para Sistema e traduz os menus internos da Tela inicial para “Abrir”.
+- A release oferece o **Controle LDZ 1.5.1** como download separado e opcional.
+
+## Versão anterior: 2.2.3
+
+- Centraliza os grupos de Entradas e Atalhos da home.
+- Adiciona opções de Som e reorganiza Idioma em Sistema.
+
 ## Versão anterior: 2.1
 
 - Adiciona o perfil **TV LDZ Fast**, com transparências mais simples e menos efeitos visuais para reduzir o trabalho de renderização.
@@ -115,4 +128,5 @@ Veja também os projetos independentes [Tempo LDZ](https://github.com/ludezam/te
 
 - [FreeMyProjector LDZ](https://github.com/ludezam/FreeMyProjector-LDZ) — home personalizada para projetores Android.
 - [Controle LDZ](https://github.com/ludezam/Controle-LDZ) — controle remoto local por Wi-Fi para Android TV e projetores Android.
+
 
